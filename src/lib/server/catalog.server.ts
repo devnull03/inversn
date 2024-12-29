@@ -47,8 +47,18 @@ export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 		const response = await catalogApi.searchCatalogItems(catalogSearchParams);
 
 		categoryItemsCache.update((categoryItems) => {
-			let categoryItemsIds = categoryItems[categoryId] ?? [];
+			let cacheCategory = categoryItems[categoryId];
 
+			if (!categoryItems[categoryId] && response.result.items) {
+				categoryItems[categoryId] = response.result.items;
+				return categoryItems
+			}
+
+			let cacheCategoryItemIds = cacheCategory.map(item => item.id)
+			for (const item of response.result.items ?? []) {
+				if (!cacheCategoryItemIds.includes(item.id))
+					cacheCategory.push(item);
+			}
 			return categoryItems;
 		});
 
