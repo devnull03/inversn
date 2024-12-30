@@ -16,7 +16,8 @@
   import { PUBLIC_COMPANY_NAME } from "$env/static/public";
 
   let initScroll = $state(0);
-  let isLandingPage = $derived($page.route.id === "/");
+  // let isLandingPage = $derived($page.route.id === "/");
+  let isLandingPage = false;
 
   let mobileNavButtonWidth: number = $state(0);
   let mobileNavOpen = $state(false);
@@ -48,10 +49,7 @@
       : 'bg-white'} border-black transition-all duration-500 ease-in-out"
   >
     <button
-      class="flex items-center pl-20 font-[Cantarell] text-xl lg:text-2xl {initScroll <
-        $scrollThreshold && isLandingPage
-        ? 'text-transparent'
-        : 'text-[#00000080]'}"
+      class="flex items-center pl-20 font-[Cantarell] text-xl lg:text-2xl"
       id="header-logo-area"
       onclick={() => goto("/")}
     >

@@ -7,13 +7,27 @@
   import { fade } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { isMobile, scrollThreshold } from "$lib/stores.svelte";
+  import {
+    categoryItemsCache,
+    isMobile,
+    scrollThreshold,
+  } from "$lib/stores.svelte";
 
   let initScroll = $state(0);
+
+  let { data } = $props();
+
+  $inspect(data);
 
   onMount(() => {});
 </script>
 
 <svelte:window bind:scrollY={initScroll} />
 
-<main class="flex w-screen flex-col items-center gap-16 lg:gap-8 pb-48"></main>
+<main class="flex w-screen flex-col items-center gap-16 lg:gap-8 pb-48">
+  {#if data.items}
+    {#each data.items.map((i) => i.items).flat() as item}
+      {item?.id} <br>
+    {/each}
+  {/if}
+</main>

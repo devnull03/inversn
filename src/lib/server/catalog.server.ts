@@ -16,14 +16,14 @@ export const getCategories = async (cursor?: string) => {
 
 		const response = await catalogApi.searchCatalogObjects(catalogSearchParams);
 
-		categoriesCache.update((categories) => {
-			let categoriesIds = categories.map(category => category.id);
-			for (const category of response.result.objects ?? []) {
-				if (!categoriesIds.includes(category.id))
-					categories.push(category);
-			}
-			return categories;
-		});
+		// categoriesCache.update((categories) => {
+		// 	let categoriesIds = categories.map(category => category.id);
+		// 	for (const category of response.result.objects ?? []) {
+		// 		if (!categoriesIds.includes(category.id))
+		// 			categories.push(category);
+		// 	}
+		// 	return categories;
+		// });
 
 		return response.result;
 
@@ -46,21 +46,21 @@ export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 
 		const response = await catalogApi.searchCatalogItems(catalogSearchParams);
 
-		categoryItemsCache.update((categoryItems) => {
-			let cacheCategory = categoryItems[categoryId];
+		// categoryItemsCache.update((categoryItems) => {
+		// 	let cacheCategory = categoryItems[categoryId];
 
-			if (!categoryItems[categoryId] && response.result.items) {
-				categoryItems[categoryId] = response.result.items;
-				return categoryItems
-			}
+		// 	if (!categoryItems[categoryId] && response.result.items) {
+		// 		categoryItems[categoryId] = response.result.items;
+		// 		return categoryItems
+		// 	}
 
-			let cacheCategoryItemIds = cacheCategory.map(item => item.id)
-			for (const item of response.result.items ?? []) {
-				if (!cacheCategoryItemIds.includes(item.id))
-					cacheCategory.push(item);
-			}
-			return categoryItems;
-		});
+		// 	let cacheCategoryItemIds = cacheCategory.map(item => item.id)
+		// 	for (const item of response.result.items ?? []) {
+		// 		if (!cacheCategoryItemIds.includes(item.id))
+		// 			cacheCategory.push(item);
+		// 	}
+		// 	return categoryItems;
+		// });
 
 		return response.result;
 

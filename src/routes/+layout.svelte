@@ -11,7 +11,6 @@
   import Header from "$lib/components/Header.svelte";
   import { Toaster } from "$lib/components/ui/sonner";
   import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
-
   interface Props {
     children?: import("svelte").Snippet;
   }
@@ -27,13 +26,14 @@
     keywords: [],
     placename: "",
     region: "",
-  }
+  };
 
   injectAnalytics({ mode: dev ? "development" : "production" });
   injectSpeedInsights();
 
-  onMount(() => {
+  onMount(async () => {
     firstLoad = false;
+
   });
 </script>
 
@@ -56,29 +56,17 @@
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-title" content={PUBLIC_COMPANY_NAME} />
-  <link rel="manifest" href="/site.webmanifest" />
+  <!-- <link rel="manifest" href="/site.webmanifest" /> -->
 
-  <meta
-    name="description"
-    content={siteData.description}
-  />
-  <meta
-    name="keywords"
-    content={siteData.keywords.join(", ")}
-  />
+  <meta name="description" content={siteData.description} />
+  <meta name="keywords" content={siteData.keywords.join(", ")} />
   <meta property="og:title" content={PUBLIC_COMPANY_NAME} />
-  <meta
-    property="og:description"
-    content={siteData.description}
-  />
+  <meta property="og:description" content={siteData.description} />
   <meta property="og:image" content="/favicon-96x96.png" />
   <meta property="og:url" content={PUBLIC_DOMAIN} />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={PUBLIC_COMPANY_NAME} />
-  <meta
-    name="twitter:description"
-    content={siteData.description}
-  />
+  <meta name="twitter:description" content={siteData.description} />
   <meta name="twitter:image" content="/favicon-96x96.png" />
 
   <meta name="author" content={PUBLIC_COMPANY_NAME} />
