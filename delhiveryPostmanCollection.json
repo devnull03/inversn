@@ -1,0 +1,900 @@
+{
+  "info": {
+    "_postman_id": "429dd80b-c2a1-4081-a7f7-74d7985675d1",
+    "name": "Delhivery Apis",
+    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Manifestation - staging - Forward flow",
+      "id": "3c90ca46-3244-4522-97b2-323f90f41e4a",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "format=json&data={\n    \"shipments\": [\n        {\n            \"add\": \"M25,NelsonMarg\",\n            \"address_type\": \"home\",\n            \"phone\": \"8310418179\",\n            \"payment_mode\": \"COD\",\n            \"name\": \"Shruti\",\n            \"pin\": \"411021\",\n            \"order\": \"3\",\n            \"country\": \"India\",\n            \"cod_amount\": 1293.89,\n            \"waybill\": \"\",\n            \"shipping_mode\" : \"Surface\"\n        }\n    ],\n    \"pickup_location\": {\n        \"name\": \"ESS SURFACE\",\n        \"city\": \"Pune\",\n        \"pin\": \"411021\",\n        \"country\": \"India\",\n        \"phone\": \"8310418179\",\n        \"add\": \"SAMSUKHA COMPLEX H. NO. 204 2ND FLOOR 2ND FLOOR BELAGAVI KHADE BAZAR , Belgaun, Karnataka ,India 590001\"\n    }\n}"
+        },
+        "url": "https://staging-express.delhivery.com/api/cmu/create.json"
+      },
+      "response": []
+    },
+    {
+      "name": "Pincode Serviceability -  staging",
+      "id": "5608d444-2e70-41af-80c4-5947cdd7ca29",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://staging-express.delhivery.com/c/api/pin-codes/json/?token=xxxxxxxxxxxxxxxxxxxxxxxxxxxx&filter_codes=400064",
+          "protocol": "https",
+          "host": [
+            "staging-express",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "c",
+            "api",
+            "pin-codes",
+            "json",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            {
+              "key": "filter_codes",
+              "value": "400064"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Pincode Serviceability - PROD",
+      "id": "95d4e395-ee8b-4d39-9639-2988fce02d23",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://track.delhivery.com/c/api/pin-codes/json/?token=xxxxxxxxxxxxxxxxxxxxxxx&filter_codes=400064",
+          "protocol": "https",
+          "host": [
+            "track",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "c",
+            "api",
+            "pin-codes",
+            "json",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "xxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            {
+              "key": "filter_codes",
+              "value": "400064"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Pickup Request - Staging",
+      "id": "71c1c5d3-1bb2-4f5e-b773-afbebf756697",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"pickup_time\": \"07:00:00\",\n    \"pickup_date\": \"2021-09-04\",\n    \"pickup_location\": \"Ayush99tshirts\",\n    \"expected_package_count\": 1\n}"
+        },
+        "url": "https://staging-express.delhivery.com/fm/request/new/"
+      },
+      "response": []
+    },
+    {
+      "name": "Invoice - Shipping Charge - PROD",
+      "id": "c0bc161b-9315-4557-8d86-c7a321b7527b",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          }
+        ],
+        "url": {
+          "raw": "https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=S&ss=RTO&d_pin=226010&o_pin=201016&cgm=1500",
+          "protocol": "https",
+          "host": [
+            "track",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "api",
+            "kinko",
+            "v1",
+            "invoice",
+            "charges",
+            ".json"
+          ],
+          "query": [
+            {
+              "key": "md",
+              "value": "S"
+            },
+            {
+              "key": "ss",
+              "value": "RTO"
+            },
+            {
+              "key": "d_pin",
+              "value": "226010"
+            },
+            {
+              "key": "o_pin",
+              "value": "201016"
+            },
+            {
+              "key": "cgm",
+              "value": "1500"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Pickup Request - PROD",
+      "id": "31840859-d8ff-4a82-8567-d1cf750a49dd",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"pickup_time\": \"07:00:00\",\n    \"pickup_date\": \"2021-09-04\",\n    \"pickup_location\": \"Ayush99tshirts\",\n    \"expected_package_count\": 1\n}"
+        },
+        "url": "https://track.delhivery.com/fm/request/new/"
+      },
+      "response": []
+    },
+    {
+      "name": "Ware house creation -  Staging ",
+      "id": "7efcb165-c37b-4195-b937-5e199ca20d5e",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"8888888888\",\n  \"city\": \"Kota\",\n  \"name\": \"TS Surface 2\",\n  \"pin\": \"324005\",\n  \"address\": \"address\",\n  \"country\": \"India\",\n  \"email\": \"abc@gmail.com\",\n  \"registered_name\": \"TS Surface 2\",\n   \"return_address\": \"return_address\",\n   \"return_pin\":\"324005\",\n   \"return_city\":\"Kota\",\n   \"return_state\":\"Delhi\",\n   \"return_country\": \"India\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "https://staging-express.delhivery.com/api/backend/clientwarehouse/create/"
+      },
+      "response": []
+    },
+    {
+      "name": "Ware house edit api - Staging",
+      "id": "d7026820-7210-4366-b96d-1f3d2c74bcdc",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"whirlpool\",\"registered_name\":\"whirlpool\",\"address\":\"Delhivery\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "https://staging-express.delhivery.com/api/backend/clientwarehouse/edit/"
+      },
+      "response": []
+    },
+    {
+      "name": "Ware house creation - PROD",
+      "id": "d14cafa5-8779-43d1-bd3a-9e20b76812a7",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxx",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"phone\": \"7948999917\",\n    \"city\": \"Guwahati\",\n    \"name\": \"INNOVATIONMAKER SURFACE - 1079-125\",\n    \"pin\": \"781001\",\n    \"address\": \"GISKAA, No 19, First Floor, Lamb Road, Ambari (Opp Bhanu Apartments), Guwahati - 781001 \",\n    \"country\": \"India\",\n    \"email\": \"\",\n    \"registered_name\": \"1079-125\",\n    \"return_address\": \"GISKAA, No 19, First Floor, Lamb Road, Ambari (Opp Bhanu Apartments), Guwahati - 781001 \",\n    \"return_pin\": \"781001\",\n    \"return_city\": \"Guwahati\",\n    \"return_state\": \"assam\",\n    \"return_country\": \"India\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "https://track.delhivery.com/api/backend/clientwarehouse/create/"
+      },
+      "response": []
+    },
+    {
+      "name": "Ware house edit api - PROD",
+      "id": "f658319a-fab5-42a2-b5a6-064cd958827d",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n      \"name\":\"TS Surface 2\",\n      \"registered_name\":\"TS Surface 2\",\n      \"address\":\"123, sector 40 Gurgaon\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "https://track.delhivery.com/api/backend/clientwarehouse/edit/"
+      },
+      "response": []
+    },
+    {
+      "name": "Manifestation - PROD",
+      "id": "a057c6c8-5182-4a86-b767-e208d6444542",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "format=json&data={\n    \"pickup_location\": {\n        \"add\": \"Unit No 7, Plot No 71E to T, GOVERNMENT INDUSTRIAL ESTATE, Behind Garuda Petrol Pump, Charkop, KANDIVALI WEST,Mumbai, Maharashtra, \",\n        \"country\": \"India\",\n        \"pin\": \"400067\",\n        \"phone\": \"7774855283\",\n        \"city\": \"Mumbai\",\n        \"name\": \"BRILLARE SURFACE\",\n        \"state\": \"Maharastra\"\n    },\n    \"shipments\": [\n        {\n            \"country\": \"India\",\n            \"city\": \"Kohima\",\n            \"seller_add\": \"\",\n            \"cod_amount\": \"0\",\n            \"return_phone\": \"7774855283\",\n            \"seller_inv_date\": \"\",\n            \"seller_name\": \"\",\n            \"pin\": \"797001\",\n            \"seller_inv\": \"\",\n            \"state\": \"Nagaland\",\n            \"return_name\": \"Unit No 7,GOVERNMENT INDUSTRIAL ESTATE\",\n            \"order\": \"528323\",\n            \"add\": \"MRH- C 113, Ward no - 18. Below Sumi Church, Merhulietsa School Road\",\n            \"payment_mode\": \"Prepaid\",\n            \"quantity\": \"1\",\n            \"return_add\": \"Unit No 7, Plot No 71E to T, GOVERNMENT INDUSTRIAL ESTATE, Behind Garuda Petrol Pump, Charkop, KANDIVALI WEST,Mumbai, Maharashtra, \",\n            \"seller_cst\": \"\",\n            \"seller_tin\": \"\",\n            \"phone\": \"9603304294\",\n            \"total_amount\": \"750\",\n            \"name\": \"Asen  Jamir\",\n            \"return_country\": \"India\",\n            \"return_city\": \"Mumbai\",\n            \"return_state\": \"Maharastra\",\n            \"return_pin\": \"400067\"\n        }\n        \n    ]\n}"
+        },
+        "url": "https://track.delhivery.com/api/cmu/create.json"
+      },
+      "response": []
+    },
+    {
+      "name": "Edit api for orders - Staging",
+      "id": "930babf0-8706-43ae-84be-e11c8bd43014",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tax_value\": \"tax value\",\n  \"shipment_width\": 10,\n  \"product_category\": \"category\",\n   \"product_details\": \"product details\",\n  \"add\": \"abc road,house no 2\"\n}"
+        },
+        "url": "https://staging-express.delhivery.com/api/p/edit"
+      },
+      "response": []
+    },
+    {
+      "name": "Edit api for orders - PROD",
+      "id": "84c94b92-1b0b-4856-b536-6c62961229ab",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tax_value\": \"tax value\",\n  \"shipment_width\": 10,\n  \"product_category\": \"category\",\n   \"product_details\": \"product details\",\n  \"add\": \"abc road,house no 2\"\n}"
+        },
+        "url": "https://track.delhivery.com/api/p/edit"
+      },
+      "response": []
+    },
+    {
+      "name": "Cancel api for orders - Staging",
+      "id": "f992a1be-bff0-41eb-8edb-a7e4bcf0d793",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"waybill\": \"waybill no.\",\n    \"cancellation\": \"true\"\n}"
+        },
+        "url": "https://staging-express.delhivery.com/api/p/edit"
+      },
+      "response": []
+    },
+    {
+      "name": "Cancel api for orders - PROD",
+      "id": "60a7a2c4-5828-4076-b0df-79c077142834",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"waybill\": \"xxxxxxxxxxxxxxxxx\",\n    \"cancellation\": \"true\"\n}"
+        },
+        "url": "https://track.delhivery.com/api/p/edit"
+      },
+      "response": []
+    },
+    {
+      "name": "Packing slip - Staging",
+      "id": "4e717686-c975-4bec-a426-a84514c0b3d2",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://staging-express.delhivery.com/api/p/packing_slip?wbns=XXXXXXXXXXXXXX",
+          "protocol": "https",
+          "host": [
+            "staging-express",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "api",
+            "p",
+            "packing_slip"
+          ],
+          "query": [
+            {
+              "key": "wbns",
+              "value": "XXXXXXXXXXXXXX"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Packing slip - PROD",
+      "id": "8143ee05-d471-477a-a0f3-6bd816b4296a",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "https://track.delhivery.com/api/p/packing_slip?wbns=xxxxxxxxxxxxx",
+          "protocol": "https",
+          "host": [
+            "track",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "api",
+            "p",
+            "packing_slip"
+          ],
+          "query": [
+            {
+              "key": "wbns",
+              "value": "xxxxxxxxxxxxx"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tracking API - Staging",
+      "id": "6b458a4f-375d-437d-8e48-64fd3f37ca4a",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "https://staging-express.delhivery.com/api/v1/packages/json/?waybill=xxxxxxxxxxxxxxxxx&token=xxxxxxxxxxxxxxxxxxxxxxx",
+          "protocol": "https",
+          "host": [
+            "staging-express",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "packages",
+            "json",
+            ""
+          ],
+          "query": [
+            {
+              "key": "waybill",
+              "value": "xxxxxxxxxxxxxxxxx"
+            },
+            {
+              "key": "token",
+              "value": "xxxxxxxxxxxxxxxxxxxxxxx"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tracking API - PROD",
+      "id": "f9d2bc23-3345-4335-8eef-eac7c3150392",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          },
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "https://track.delhivery.com/api/v1/packages/json?waybill=xxxxxxxxxxxxxxxxx&token=xxxxxxxxxxxxxxxxxxxx",
+          "protocol": "https",
+          "host": [
+            "track",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "packages",
+            "json"
+          ],
+          "query": [
+            {
+              "key": "waybill",
+              "value": "xxxxxxxxxxxxxxxxx"
+            },
+            {
+              "key": "token",
+              "value": "xxxxxxxxxxxxxxxxxxxx"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Bulk Way bill Api - Staging",
+      "id": "32d16246-9f73-4352-a1ce-fba3037200f5",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://staging-express.delhivery.com/waybill/api/bulk/json/?token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&count=5",
+          "protocol": "https",
+          "host": [
+            "staging-express",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "waybill",
+            "api",
+            "bulk",
+            "json",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            {
+              "key": "count",
+              "value": "5"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Bulk Way bill Api - PROD",
+      "id": "879882d7-01e5-4d8a-9904-0f4a03dcb716",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://track.delhivery.com/waybill/api/bulk/json/?token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&count=5",
+          "protocol": "https",
+          "host": [
+            "track",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "waybill",
+            "api",
+            "bulk",
+            "json",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            {
+              "key": "count",
+              "value": "5"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Manifestation - Staging - Forward Flow ( Full payload)",
+      "id": "3aeea1b7-a4f1-4076-89a4-f424cabf0f75",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "format=json&data={\n  \"shipments\": [{\n    \"add\": \"M25,NelsonMarg\", (mandatory)\n    \"address_type\": \"home\"/\"office\",  (optional)\n    \"phone\": \"1234567890\",  (mandatory)\n    \"payment_mode\": \"Prepaid/COD/Pickup/REPL\", (mandatory)\n    \"name\": \"name-of-the-consignee\", (mandatory)\n    \"pin\": 325007, (mandatory)\n    \"order\": \"orderid\", (mandatory)\n\n    \"consignee_gst_amount\": \"for ewaybill-incase of intra-state required only\",\n    \"integrated_gst_amount\": \"for ewaybill-incase of intra-state required only\",\n    \"ewbn\": \"if ewbn is there no need to send additional keys for generating ewaybill only if the total package amount is greater than or equal to 50k\",\n    \"consignee_gst_tin\": \"consignee_gst_tin\",\n    \"seller_gst_tin\": \"seller_gst_tin\",\n    \"client_gst_tin\": \"client_gst_tin\",\n    \"hsn_code\": \"Required for ewaybill-hsn_code\",\n    \"gst_cess_amount\": \"for ewaybill-gst_cess_amount\",\n    \"shipping_mode\" : \"Surface/Express\",\n\n    \"client\": \"client-name-as-registered-with-delhivery\", (optional)\n    \"tax_value\": \"taxvalue\", (optional)\n    \"seller_tin\": \"sellertin\", (optional)\n    \"seller_gst_amount\": \"for ewaybill-incase of intra-state required only\", (optional)\n    \"seller_inv\": \"sellerinv\", (optional)\n    \"city\": \"Kota\", (optional)\n    \"commodity_value\": \"commodityvalue\", (optional)\n    \"weight\": \"weight(gms)\", (optional)\n    \"return_state\": \"returnstate\", (optional)\n    \"document_number\": \"for ewaybill-document_number,only mandatory in case of ewbn\", (optional)\n    \"od_distance\": \"ditance between origin and destination\", (optional)\n    \"sales_tax_form_ack_no\": \"ackno.\", (optional)\n    \"document_type\": \"for ewaybill-document_type,only mandatory in case of ewbn\", (optional)\n    \"seller_cst\": \"sellercst\", (optional)\n    \"seller_name\": \"sellername\", (optional)\n    \"fragile_shipment\": \"true\",(Optional,If content is fragile, Key Value must be true else false)\n    \"return_city\": \"returncity\", (optional)\n    \"return_phone\": \"returnphone\", (optional)\n    \"qc\": { (optional) //qc field only required for RVP packages for QC check\n      \"item\": [{\n        \"images\": \"img1-static image url\",\n        \"color\": \"Color of the product\",\n        \"reason\": \"Damaged Product/Return reason of the product\",\n        \"descr\": \"description of the product\",\n        \"ean\": \"EAN no. that needs to be checked for a product (apparels)\",\n        \"imei\": \"IMEI no. that needs to be checked for a product (mobile phones)\",\n        \"brand\": \"Brand of the product\",\n        \"pcat\": \"Product category like mobile, apparels etc.\",\n        \"si\": \"special instruction for FE\",\n        \"item_quantity\" : 2\n      }]\n    },\n    \"shipment_height\": 10,(optional)\n    \"shipment_width\": 11,(optional)\n    \"shipment_length\": 12,(optional)\n    \"category_of_goods\": \"categoryofgoods\", (optional)\n    \"cod_amount\": 2125, (optional)\n    \"return_country\": \"returncountry\", (optional)\n    \"shipment_width\": \"shipmentwidth\", (optional)\n    \"document_date\": \"for ewaybill-datetime,mandatory in case of ewbn\", (optional)\n    \"taxable_amount\": \"for ewaybill-taxable_amount in case of multiple items only\", (optional)\n    \"products_desc\": \"for ewaybill-mandatory,incase of intra-state required only\", (optional)\n    \"state\": \"Rajasthan\", (optional)\n    \"dangerous_good\": \"True/False\", (optional)\n    \"waybill\": \"waybillno.(trackingid)\", (optional)\n    \"consignee_tin\": \"consigneetin\", (optional)\n    \"order_date\": \"2017-05-20 12:00:00\", (optional)\n    \"return_add\": \"returnaddress\", (optional)\n    \"total_amount\": 21840, (optional)\n    \"seller_add\": \"selleradd\", (optional)\n    \"country\": \"India\", (optional)//It will be mandatory for Bangladesh and value should be \"BD\"\n    \"return_pin\": \"returnpin\", (optional)\n    \"extra_parameters\": { (optional)\n      \"return_reason\": \"string\"\n    },\n    \"return_name\": \"name\", (optional)\n    \"supply_sub_type\": \"for ewaybill-supply_sub_type,mandatory in case of ewbn\", (optional)\n    \"plastic_packaging\" :\"true/false\", (optional)\n    \"quantity\": \"quantity\" (optional)\n  }],\n  \"pickup_location\": {\n    \"name\": \"client-warehouse-name-as-registered-with-delhivery\", (mandatory)\n    \"city\": \"city\",\n    \"pin\": \"pin-code\",\n    \"country\": \"country\",\n    \"phone\": \"phoneno.\",\n    \"add\": \"address-of-warehouse\"\n  }\n}"
+        },
+        "url": "https://staging-express.delhivery.com/api/cmu/create.json"
+      },
+      "response": []
+    },
+    {
+      "name": "Manifestation - Staging - Reverse Flow",
+      "id": "d8be4e62-06ab-4807-a82e-3fd44a3064dc",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx; sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "format=json&data={\n\t\"pickup_location\": {\n\t\t\"add\": \"abcd\", (Mandatory)\n\t\t\"city\": \"Bangalore\", (Mandatory)\n\t\t\"country\": \"India\", (Mandatory)\n\t\t\"name\": \"Client's warehouse\",\n\t\t\"phone\": \"1111111111\",\n\t\t\"pin\": \"560002\"\n\t},\n\t\"shipments\": [{\n\t\t\"waybill\": \"\",\n\t\t\"name\": \"Random Org Inc.\",\n\t\t\"order\": \"SGHJ440954655B\",\n\t\t\"products_desc\": \"clothing\",\n\t\t\"order_date\": \"1970-01-01T05:30:00.000000\",\n\t\t\"payment_mode\": \"Pickup\", (Mandatory)\n\t\t\"total_amount\": 1000,\n\t\t\"cod_amount\": 0,\n\t\t\"add\": \"H.no 64/6, Officer's Colony n Manekshaw Society n Delhi cantt n\",\n\t\t\"city\": \"Delhi\",\n\t\t\"state\": \"Delhi\",\n\t\t\"country\": \"India\",\n\t\t\"phone\": \"1111111111\",\n\t\t\"pin\": \"110010\",\n\t\t\"return_add\": \"abcd\", (Mandatory)\n\t\t\"return_city\": \"Bangalore\", (Mandatory)\n\t\t\"return_country\": \"India\", (Mandatory)\n\t\t\"return_name\": \"Test Co.\", (Mandatory)\n\t\t\"return_phone\": \"1111111111\", (Mandatory)\n\t\t\"return_pin\": \"560002\", (Mandatory)\n\t\t\"return_state\": \"Karnataka\", (Mandatory)\n\t\t\"supplier\": null,\n\t\t\"extra_parameters\": null,\n\t\t\"shipment_width\": null,\n\t\t\"shipment_height\": null,\n\t\t\"weight\": \"1000.0 gm\",\n\t\t\"quantity\": 1,\n\t\t\"seller_inv\": null,\n\t\t\"seller_inv_date\": \"1970-01-01T05:30:00.000000\",\n\t\t\"seller_name\": \"\",\n\t\t\"seller_add\": \"abcd\",\n\t\t\"seller_cst\": null,\n\t\t\"seller_tin\": null,\n\t\t\"consignee_tin\": null,\n\t\t\"commodity_value\": null,\n\t\t\"tax_value\": null,\n\t\t\"sales_tax_form_ack_no\": null,\n\t\t\"category_of_goods\": \"clothing\",\n\t\t\"seller_gst_tin\": \"31BFGPD7096P1ZP\",\n\t\t\"client_gst_tin\": null,\n\t\t\"consignee_gst_tin\": \"29AADCH8879C1Z5\",\n\t\t\"invoice_reference\": \"1\",\n\t\t\"hsn_code\": null\n\t}]\n}"
+        },
+        "url": "https://staging-express.delhivery.com/api/cmu/create.json"
+      },
+      "response": []
+    },
+    {
+      "name": "Manifestion- PROD - Reverse Flow",
+      "id": "376f93d4-1974-4a5e-8cab-d86006cf9e10",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx; sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx; sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "format=json&data={\n\t\"pickup_location\": {\n\t\t\"add\": \"abcd\", (Mandatory)\n\t\t\"city\": \"Bangalore\", (Mandatory)\n\t\t\"country\": \"India\", (Mandatory)\n\t\t\"name\": \"Client's warehouse\",\n\t\t\"phone\": \"1111111111\",\n\t\t\"pin\": \"560002\"\n\t},\n\t\"shipments\": [{\n\t\t\"waybill\": \"\",\n\t\t\"name\": \"Random Org Inc.\",\n\t\t\"order\": \"SGHJ440954655B\",\n\t\t\"products_desc\": \"clothing\",\n\t\t\"order_date\": \"1970-01-01T05:30:00.000000\",\n\t\t\"payment_mode\": \"Pickup\", (Mandatory)\n\t\t\"total_amount\": 1000,\n\t\t\"cod_amount\": 0,\n\t\t\"add\": \"H.no 64/6, Officer's Colony n Manekshaw Society n Delhi cantt n\",\n\t\t\"city\": \"Delhi\",\n\t\t\"state\": \"Delhi\",\n\t\t\"country\": \"India\",\n\t\t\"phone\": \"1111111111\",\n\t\t\"pin\": \"110010\",\n\t\t\"return_add\": \"abcd\", (Mandatory)\n\t\t\"return_city\": \"Bangalore\", (Mandatory)\n\t\t\"return_country\": \"India\", (Mandatory)\n\t\t\"return_name\": \"Test Co.\", (Mandatory)\n\t\t\"return_phone\": \"1111111111\", (Mandatory)\n\t\t\"return_pin\": \"560002\", (Mandatory)\n\t\t\"return_state\": \"Karnataka\", (Mandatory)\n\t\t\"supplier\": null,\n\t\t\"extra_parameters\": null,\n\t\t\"shipment_width\": null,\n\t\t\"shipment_height\": null,\n\t\t\"weight\": \"1000.0 gm\",\n\t\t\"quantity\": 1,\n\t\t\"seller_inv\": null,\n\t\t\"seller_inv_date\": \"1970-01-01T05:30:00.000000\",\n\t\t\"seller_name\": \"\",\n\t\t\"seller_add\": \"abcd\",\n\t\t\"seller_cst\": null,\n\t\t\"seller_tin\": null,\n\t\t\"consignee_tin\": null,\n\t\t\"commodity_value\": null,\n\t\t\"tax_value\": null,\n\t\t\"sales_tax_form_ack_no\": null,\n\t\t\"category_of_goods\": \"clothing\",\n\t\t\"seller_gst_tin\": \"31BFGPD7096P1ZP\",\n\t\t\"client_gst_tin\": null,\n\t\t\"consignee_gst_tin\": \"29AADCH8879C1Z5\",\n\t\t\"invoice_reference\": \"1\",\n\t\t\"hsn_code\": null\n\t}]\n}"
+        },
+        "url": "https://track.delhivery.com/api/cmu/create.json"
+      },
+      "response": []
+    },
+    {
+      "name": "Manifestation - PROD - Full payload",
+      "id": "50282d88-1a1b-41f9-8448-71f4116168a1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx; sessionid=ze4ncds5tobeyynmbb1u0l6ccbpsmggx"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "format=json&data={\n  \"shipments\": [{\n    \"add\": \"M25,NelsonMarg\", (mandatory)\n    \"address_type\": \"home\"/\"office\",  (optional)\n    \"phone\": \"1234567890\",  (mandatory)\n    \"payment_mode\": \"Prepaid/COD/Pickup/REPL\", (mandatory)\n    \"name\": \"name-of-the-consignee\", (mandatory)\n    \"pin\": 325007, (mandatory)\n    \"order\": \"orderid\", (mandatory)\n\n    \"consignee_gst_amount\": \"for ewaybill-incase of intra-state required only\",\n    \"integrated_gst_amount\": \"for ewaybill-incase of intra-state required only\",\n    \"ewbn\": \"if ewbn is there no need to send additional keys for generating ewaybill only if the total package amount is greater than or equal to 50k\",\n    \"consignee_gst_tin\": \"consignee_gst_tin\",\n    \"seller_gst_tin\": \"seller_gst_tin\",\n    \"client_gst_tin\": \"client_gst_tin\",\n    \"hsn_code\": \"Required for ewaybill-hsn_code\",\n    \"gst_cess_amount\": \"for ewaybill-gst_cess_amount\",\n    \"shipping_mode\" : \"Surface/Express\",\n\n    \"client\": \"client-name-as-registered-with-delhivery\", (optional)\n    \"tax_value\": \"taxvalue\", (optional)\n    \"seller_tin\": \"sellertin\", (optional)\n    \"seller_gst_amount\": \"for ewaybill-incase of intra-state required only\", (optional)\n    \"seller_inv\": \"sellerinv\", (optional)\n    \"city\": \"Kota\", (optional)\n    \"commodity_value\": \"commodityvalue\", (optional)\n    \"weight\": \"weight(gms)\", (optional)\n    \"return_state\": \"returnstate\", (optional)\n    \"document_number\": \"for ewaybill-document_number,only mandatory in case of ewbn\", (optional)\n    \"od_distance\": \"ditance between origin and destination\", (optional)\n    \"sales_tax_form_ack_no\": \"ackno.\", (optional)\n    \"document_type\": \"for ewaybill-document_type,only mandatory in case of ewbn\", (optional)\n    \"seller_cst\": \"sellercst\", (optional)\n    \"seller_name\": \"sellername\", (optional)\n    \"fragile_shipment\": \"true\",(Optional,If content is fragile, Key Value must be true else false)\n    \"return_city\": \"returncity\", (optional)\n    \"return_phone\": \"returnphone\", (optional)\n    \"qc\": { (optional) //qc field only required for RVP packages for QC check\n      \"item\": [{\n        \"images\": \"img1-static image url\",\n        \"color\": \"Color of the product\",\n        \"reason\": \"Damaged Product/Return reason of the product\",\n        \"descr\": \"description of the product\",\n        \"ean\": \"EAN no. that needs to be checked for a product (apparels)\",\n        \"imei\": \"IMEI no. that needs to be checked for a product (mobile phones)\",\n        \"brand\": \"Brand of the product\",\n        \"pcat\": \"Product category like mobile, apparels etc.\",\n        \"si\": \"special instruction for FE\",\n        \"item_quantity\" : 2\n      }]\n    },\n    \"shipment_height\": 10,(optional)\n    \"shipment_width\": 11,(optional)\n    \"shipment_length\": 12,(optional)\n    \"category_of_goods\": \"categoryofgoods\", (optional)\n    \"cod_amount\": 2125, (optional)\n    \"return_country\": \"returncountry\", (optional)\n    \"shipment_width\": \"shipmentwidth\", (optional)\n    \"document_date\": \"for ewaybill-datetime,mandatory in case of ewbn\", (optional)\n    \"taxable_amount\": \"for ewaybill-taxable_amount in case of multiple items only\", (optional)\n    \"products_desc\": \"for ewaybill-mandatory,incase of intra-state required only\", (optional)\n    \"state\": \"Rajasthan\", (optional)\n    \"dangerous_good\": \"True/False\", (optional)\n    \"waybill\": \"waybillno.(trackingid)\", (optional)\n    \"consignee_tin\": \"consigneetin\", (optional)\n    \"order_date\": \"2017-05-20 12:00:00\", (optional)\n    \"return_add\": \"returnaddress\", (optional)\n    \"total_amount\": 21840, (optional)\n    \"seller_add\": \"selleradd\", (optional)\n    \"country\": \"India\", (optional)//It will be mandatory for Bangladesh and value should be \"BD\"\n    \"return_pin\": \"returnpin\", (optional)\n    \"extra_parameters\": { (optional)\n      \"return_reason\": \"string\"\n    },\n    \"return_name\": \"name\", (optional)\n    \"supply_sub_type\": \"for ewaybill-supply_sub_type,mandatory in case of ewbn\", (optional)\n    \"plastic_packaging\" :\"true/false\", (optional)\n    \"quantity\": \"quantity\" (optional)\n  }],\n  \"pickup_location\": {\n    \"name\": \"client-warehouse-name-as-registered-with-delhivery\", (mandatory)\n    \"city\": \"city\",\n    \"pin\": \"pin-code\",\n    \"country\": \"country\",\n    \"phone\": \"phoneno.\",\n    \"add\": \"address-of-warehouse\"\n  }\n}"
+        },
+        "url": "https://track.delhivery.com/api/cmu/create.json"
+      },
+      "response": []
+    },
+    {
+      "name": "NDR API -staging",
+      "id": "6abc38a3-3b3f-4b2a-b9f1-6b7190797c23",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxxxxxxxxxx",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t  \"data\": [\n\t\t{\n\t\t\t\"waybill\": \"1823821\", \n\t\t\t\"act\": \"DEFER_DLV\", \n\t\t\t\"action_data\": {\n\t\t\t\t\"deferred_date\": \"2017-12-28\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"waybill\": \"3278213\", \n\t\t\t\"act\": \"EDIT_DETAILS\", \n\t\t\t\"action_data\": {\n\t\t\t\t\"name\": \"name1\", \n\t\t\t\t\"add\": \"add1\", \n\t\t\t\t\"phone\": \"2132341412\"\n\t\t\t}\n\t\t}\n\t]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "https://staging-express.delhivery.com/api/p/update"
+      },
+      "response": []
+    },
+    {
+      "name": "NDR status - Staging",
+      "id": "f43d79fb-0d8d-470c-b877-b26f01211af6",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token  Xxxxxxxxxxxxxxxxxx",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://staging-express.delhivery.com/api/cmu/get_bulk_upl?UPL=UPLxxxxxxxxxxxxxxxxxxxxxxx",
+          "protocol": "https",
+          "host": [
+            "staging-express",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "api",
+            "cmu",
+            "get_bulk_upl"
+          ],
+          "query": [
+            {
+              "key": "UPL",
+              "value": "UPLxxxxxxxxxxxxxxxxxxxxxxx"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Fetch way bill ( generate singel waybill) - PROD",
+      "id": "f009d8da-2f51-4a91-9478-f8e9ba928f11",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token xxxxxxx",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://track.delhivery.com/waybill/api/fetch/json/",
+          "protocol": "https",
+          "host": [
+            "track",
+            "delhivery",
+            "com"
+          ],
+          "path": [
+            "waybill",
+            "api",
+            "fetch",
+            "json",
+            ""
+          ],
+          "query": [
+            {
+              "key": "cl",
+              "value": "DLV Internal Test",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

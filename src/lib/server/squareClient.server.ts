@@ -9,8 +9,9 @@ const config = {
 }
 
 export const {
-	ordersApi,
 	catalogApi,
-	customersApi
+	ordersApi,
+	orderCustomAttributesApi,
+	paymentsApi,
+	customersApi,
 } = new Client(config);
-
