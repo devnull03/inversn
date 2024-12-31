@@ -10,7 +10,7 @@
   import { Input } from "$lib/components/ui/input";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import { isMobile, scrollThreshold } from "$lib/stores.svelte";
+  import { cartOpen, isMobile, scrollThreshold } from "$lib/stores.svelte";
   import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import { PUBLIC_COMPANY_NAME } from "$env/static/public";
@@ -77,6 +77,11 @@
         class="absolute top-24 z-[999] -mx-[6%] flex w-screen flex-col items-center justify-evenly gap-8 border-b border-black bg-white py-4 lg:relative lg:top-0 lg:mx-0 lg:w-auto lg:flex-row lg:border-transparent lg:bg-transparent lg:py-0"
       >
         <!-- nav buttons -->
+        <button
+          onclick={() => ($cartOpen = !$cartOpen)}
+          class="fa-solid fa-cart-shopping text-xl"
+          aria-label="Toggle cart"
+        ></button>
       </div>
     {/if}
   </div>

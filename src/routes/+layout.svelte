@@ -11,6 +11,7 @@
   import Header from "$lib/components/Header.svelte";
   import { Toaster } from "$lib/components/ui/sonner";
   import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
+  import Cart from "$lib/components/CartDrawer.svelte";
   interface Props {
     children?: import("svelte").Snippet;
   }
@@ -77,6 +78,8 @@
 <svelte:window bind:scrollY />
 
 <Toaster />
+
+<Cart />
 
 {#key load}
   <div
