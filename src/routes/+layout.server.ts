@@ -6,19 +6,19 @@ import type { CatalogObject } from 'square';
 
 export const load: LayoutServerLoad = async () => {
 
-	let { categories, images } = await getCategoriesAndImages();
-	let items;
+	const landingPageCategoryName = "Home";
 
-	// just for testing
-	items = await Promise.all(
-		categories.map(
-			(category: CatalogObject) => getCategoryItems(category.id)
-		)
-	);
+	let { categories, images } = await getCategoriesAndImages();
+	let landingPageCategoryId = categories.find(category => category.categoryData?.name === landingPageCategoryName)?.id;
+	let landingPageItems: CatalogObject[] = [];
+	if (landingPageCategoryId) {
+		let res = await getCategoryItems(landingPageCategoryId);
+		landingPageItems = res.items || [];
+	}
 
 	return {
 		categories,
-		items,
-		images
+		images,
+		landingPageItems
 	}
 };

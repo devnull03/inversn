@@ -8,8 +8,9 @@ export const categoriesCache = writable<CatalogObject[]>([]);
 export const imageCache = writable<CatalogObject[]>([]);
 
 export const categoryItemsCache = writable<{
-	[categoryId: string]: CatalogObject[]
+	[categoryId: string]: string[]
 }>({});
+export const itemCache = writable<CatalogObject[]>([]);
 
 export const cartOpen = writable(false);
 export const cartItems = writable<any[]>([]);

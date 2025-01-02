@@ -17,8 +17,6 @@
   let initScroll = $state(0);
 
   let { data } = $props();
-  let allItems = $derived(data.items.map((i: any) => i.items).flat());
-
   $inspect(data);
 
   onMount(() => {});
@@ -28,7 +26,7 @@
 
 <main class="flex flex-col w-screen items-center gap-16 lg:gap-8 pb-48 p-4">
   <section class="grid grid-cols-4 w-full gap-2">
-    {#each allItems as item}
+    {#each data.landingPageItems as item}
       {#if item}
         <ProductCard productData={item} />
       {/if}
