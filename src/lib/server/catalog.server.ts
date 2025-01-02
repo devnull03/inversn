@@ -24,9 +24,6 @@ export const getCategoriesAndImages = async (categoryCursor?: string, imageCurso
 
 		const [categoryResponse, imageResponse] = await Promise.all([catalogApi.searchCatalogObjects(categoryCatalogSearchParams), catalogApi.searchCatalogObjects(imageCatalogSearchParams)]);
 
-		// categoriesCache.set((categoryResponse.result.objects || []));
-		// imageCache.set((imageResponse.result.objects || []));
-
 		return {
 			categories: categoryResponse.result.objects || [],
 			categoryCursor: categoryResponse.result.cursor,
@@ -59,6 +56,20 @@ export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 
 	} catch (error: any) {
 		toast.error(`${error.category}: Failed to fetch category items`);
+		console.error(error);
+		return {};
+	}
+}
+
+export const getItem = async (itemId: string) => {
+	try {
+		const response = await catalogApi.retrieveCatalogObject(itemId, true);
+		console.log(response.result);
+		
+		return response.result;
+
+	} catch (error: any) {
+		toast.error(`${error.category}: Failed to fetch item`);
 		console.error(error);
 		return {};
 	}

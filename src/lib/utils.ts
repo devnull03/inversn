@@ -60,3 +60,9 @@ export const flyAndScale = (
 		easing: cubicOut
 	};
 };
+
+
+export const formatPrice = (price: bigint | undefined | null) => {
+        //   <!-- ₹ -->
+	return price ? `INR₹ ${Number(price) / 100}` : "N/A";
+}
