@@ -1,37 +1,46 @@
 import { toast } from "svelte-sonner";
 import { catalogApi } from "./squareClient.server";
-import { categoriesCache, categoryItemsCache } from "$lib/stores.svelte";
+import { categoriesCache, categoryItemsCache, imageCache } from "$lib/stores.svelte";
+import type { CatalogCategory, CatalogImage, CatalogObject, CatalogObjectCategory } from "square";
 
-const FETCH_LIMIT = 50;
+const FETCH_LIMIT = 100;
 
-export const getCategories = async (cursor?: string) => {
+export const getCategoriesAndImages = async (categoryCursor?: string, imageCursor?: string) => {
 	try {
 
 		type CatalogSearchParams = { objectTypes: string[], limit: number, cursor?: string }
-		let catalogSearchParams: CatalogSearchParams = {
+
+		let categoryCatalogSearchParams: CatalogSearchParams = {
 			objectTypes: ["CATEGORY"],
 			limit: FETCH_LIMIT,
 		}
-		if (cursor) catalogSearchParams.cursor = cursor;
+		if (categoryCursor) categoryCatalogSearchParams.cursor = categoryCursor;
 
-		const response = await catalogApi.searchCatalogObjects(catalogSearchParams);
+		let imageCatalogSearchParams: CatalogSearchParams = {
+			objectTypes: ["IMAGE"],
+			limit: FETCH_LIMIT,
+		}
+		if (imageCursor) imageCatalogSearchParams.cursor = imageCursor;
 
-		// categoriesCache.update((categories) => {
-		// 	let categoriesIds = categories.map(category => category.id);
-		// 	for (const category of response.result.objects ?? []) {
-		// 		if (!categoriesIds.includes(category.id))
-		// 			categories.push(category);
-		// 	}
-		// 	return categories;
-		// });
+		const [categoryResponse, imageResponse] = await Promise.all([catalogApi.searchCatalogObjects(categoryCatalogSearchParams), catalogApi.searchCatalogObjects(imageCatalogSearchParams)]);
 
-		return response.result;
+		// categoriesCache.set((categoryResponse.result.objects || []));
+		// imageCache.set((imageResponse.result.objects || []));
+
+		return {
+			categories: categoryResponse.result.objects || [],
+			categoryCursor: categoryResponse.result.cursor,
+
+			images: imageResponse.result.objects || [],
+			imageCursor: imageResponse.result.cursor,
+		}
 
 	} catch (error: any) {
 		toast.error(`${error.category}: Failed to fetch categories`);
 		console.error(error);
-		return [];
+		return { categoryCursor: undefined, imageCursor: undefined, categories: [], images: [] };
 	}
+
 }
 
 export const getCategoryItems = async (categoryId: string, cursor?: string) => {
@@ -45,22 +54,6 @@ export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 		if (cursor) catalogSearchParams.cursor = cursor;
 
 		const response = await catalogApi.searchCatalogItems(catalogSearchParams);
-
-		// categoryItemsCache.update((categoryItems) => {
-		// 	let cacheCategory = categoryItems[categoryId];
-
-		// 	if (!categoryItems[categoryId] && response.result.items) {
-		// 		categoryItems[categoryId] = response.result.items;
-		// 		return categoryItems
-		// 	}
-
-		// 	let cacheCategoryItemIds = cacheCategory.map(item => item.id)
-		// 	for (const item of response.result.items ?? []) {
-		// 		if (!cacheCategoryItemIds.includes(item.id))
-		// 			cacheCategory.push(item);
-		// 	}
-		// 	return categoryItems;
-		// });
 
 		return response.result;
 

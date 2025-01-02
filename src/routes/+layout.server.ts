@@ -1,24 +1,24 @@
 import type { LayoutServerLoad } from './$types';
-import { getCategories, getCategoryItems } from "$lib/server/catalog.server";
-import { categoriesCache } from "$lib/stores.svelte";
+import { getCategoriesAndImages, getCategoryItems } from "$lib/server/catalog.server";
+import { categoriesCache, imageCache } from "$lib/stores.svelte";
+import type { CatalogObject } from 'square';
 
 
 export const load: LayoutServerLoad = async () => {
 
-	let categories = await getCategories();
+	let { categories, images } = await getCategoriesAndImages();
 	let items;
+
 	// just for testing
-	if ('objects' in categories && categories.objects) {
-		items = await Promise.all(
-			categories.objects.map(
-				(category) => getCategoryItems(category.id)
-			)
-		);
-	}
+	items = await Promise.all(
+		categories.map(
+			(category: CatalogObject) => getCategoryItems(category.id)
+		)
+	);
 
 	return {
 		categories,
-		items
+		items,
+		images
 	}
-
 };

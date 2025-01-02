@@ -1,10 +1,12 @@
-import type { CatalogItem, CatalogObject, CatalogObjectCategory } from "square";
+import type { CatalogObject } from "square";
 import { writable } from "svelte/store";
 
 export const isMobile = writable(false);
 export const scrollThreshold = writable<number>(10);
 
-export const categoriesCache = writable<CatalogObjectCategory[]>([]);
+export const categoriesCache = writable<CatalogObject[]>([]);
+export const imageCache = writable<CatalogObject[]>([]);
+
 export const categoryItemsCache = writable<{
 	[categoryId: string]: CatalogObject[]
 }>({});

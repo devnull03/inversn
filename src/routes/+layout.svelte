@@ -12,12 +12,15 @@
   import { Toaster } from "$lib/components/ui/sonner";
   import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
   import Cart from "$lib/components/CartDrawer.svelte";
+  import type { LayoutData } from "./$types";
+  import { categoriesCache, imageCache } from "$lib/stores.svelte";
   interface Props {
     children?: import("svelte").Snippet;
+    data?: LayoutData;
   }
 
   let scrollY = $state(0);
-  let { children }: Props = $props();
+  let { children, data }: Props = $props();
 
   let firstLoad = $state(true);
   let load = $derived(firstLoad || !$navigating);
@@ -35,6 +38,10 @@
   onMount(async () => {
     firstLoad = false;
 
+    if (data) {
+      categoriesCache.set(data.categories);
+      imageCache.set(data.images);
+    }
   });
 </script>
 
@@ -87,7 +94,7 @@
     class="flex h-screen flex-col justify-between"
   >
     <Header />
-    <main class="">
+    <main class="mt-24">
       {@render children?.()}
     </main>
     <Footer />
