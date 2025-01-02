@@ -13,7 +13,7 @@
   import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
   import Cart from "$lib/components/CartDrawer.svelte";
   import type { LayoutData } from "./$types";
-  import { categoriesCache, imageCache } from "$lib/stores.svelte";
+  import { categoriesCache, categoryItemsCache, imageCache } from "$lib/stores.svelte";
   interface Props {
     children?: import("svelte").Snippet;
     data?: LayoutData;
@@ -59,12 +59,21 @@
     crossorigin="anonymous"
   ></script>
 
-  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content={PUBLIC_COMPANY_NAME} />
-  <!-- <link rel="manifest" href="/site.webmanifest" /> -->
+  <link
+    rel="icon"
+    type="image/png"
+    href="/favicon/favicon-96x96.png"
+    sizes="96x96"
+  />
+  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon/favicon.ico" />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="/favicon/apple-touch-icon.png"
+  />
+  <meta name="apple-mobile-web-app-title" content="Inversn" />
+  <link rel="manifest" href="/favicon/site.webmanifest" />
 
   <meta name="description" content={siteData.description} />
   <meta name="keywords" content={siteData.keywords.join(", ")} />
