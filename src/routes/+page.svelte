@@ -12,10 +12,12 @@
     isMobile,
     scrollThreshold,
   } from "$lib/stores.svelte";
+  import ProductCard from "$lib/components/ProductCard.svelte";
 
   let initScroll = $state(0);
 
   let { data } = $props();
+  let allItems = $derived(data.items.map((i: any) => i.items).flat());
 
   $inspect(data);
 
@@ -24,10 +26,12 @@
 
 <svelte:window bind:scrollY={initScroll} />
 
-<main class="flex w-screen flex-col items-center gap-16 lg:gap-8 pb-48">
-  {#if data.items}
-    {#each data.items.map((i) => i.items).flat() as item}
-      {item?.id} <br>
+<main class="flex flex-col w-screen items-center gap-16 lg:gap-8 pb-48 p-4">
+  <section class="grid grid-cols-4 w-full gap-2">
+    {#each allItems as item}
+      {#if item}
+        <ProductCard productData={item} />
+      {/if}
     {/each}
-  {/if}
+  </section>
 </main>
