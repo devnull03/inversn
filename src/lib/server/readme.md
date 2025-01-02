@@ -29,3 +29,10 @@ As per the business needs depending upon the scale and automation which one want
 ## Square 
 
 1. 
+
+## HDFC payment gateway
+
+[Integration guide](https://smartgateway.hdfcbank.com/docs/smartgateway-kits-integration/web/how-to-integrate-kits/handle-payment-responses)
+
+<!-- insert image -->
+![HDFC](https://dth95m2xtyv8v.cloudfront.net/tesseract/assets/hypercheckout-mobile-sdk/Payment%20Page%20Integration%20via%20SDK%20-%20Flow%20Diagram%20web.png)
