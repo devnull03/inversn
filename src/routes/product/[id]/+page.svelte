@@ -36,7 +36,6 @@
   $effect(() => {
     console.log(form);
     if (form) {
-      if (!untrack(() => $cartData.orderId))
         cartData.update((val) => {
           val.orderId = form.orderId;
           val.orderVersion = form.orderVersion;
