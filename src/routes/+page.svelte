@@ -17,7 +17,6 @@
   let initScroll = $state(0);
 
   let { data } = $props();
-  $inspect(data);
 
   onMount(() => {});
 </script>

@@ -1,14 +1,16 @@
 import { getItem } from "$lib/server/catalog.server";
 import { categoryItemsCache } from "$lib/stores.svelte";
-import { error } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+import { error, redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
+import { createInitCustomer } from "$lib/server/customer.server";
+import { addToCart, createCart } from "$lib/server/orders.server";
 
 
 export const load: PageServerLoad = async ({ params }) => {
 
 	let catalogItemId = params.id;
 
-	let res = await getItem(catalogItemId);
+	const res = await getItem(catalogItemId);
 
 	if (!res) return error(404, 'Not found');
 
@@ -20,3 +22,39 @@ export const load: PageServerLoad = async ({ params }) => {
 
 }
 
+export const actions: Actions = {
+	default: async (event) => {
+		const data = await event.request.formData()
+		const variationId = data.get('variationId') as string;
+		const orderId = data.get('orderId') as string;
+		const orderVersion = data.get('orderVersion');
+		const buyNow = data.get('buyNow') as string;
+
+		if (!variationId) return error(400, 'Missing variationId');
+
+		// console.log(`variationId: ${variationId}, orderId: ${orderId}, buyNow: ${buyNow}`);
+
+		let res;
+		if (orderId) {
+			if (!orderVersion) return error(400, 'Missing orderVersion');
+			let parsedOrderVersion: number;
+			try {
+				parsedOrderVersion = Number.parseInt(orderVersion as string)
+			} catch (e) {
+				return error(400, 'Invalid orderVersion');
+			}
+			res = await addToCart(orderId, parsedOrderVersion, [{ variationId, quantity: 1 }]);
+		} else {
+			res = await createCart([{ variationId, quantity: 1 }]);
+		}
+
+		if (buyNow === "true") {
+			redirect(303, `/checkout`);
+		}
+
+		return {
+			variationId,
+			...res,
+		}
+	}
+}

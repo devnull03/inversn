@@ -64,7 +64,7 @@ export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 export const getItem = async (itemId: string) => {
 	try {
 		const response = await catalogApi.retrieveCatalogObject(itemId, true);
-		console.log(response.result);
+		// console.log(response.result);
 		
 		return response.result;
 

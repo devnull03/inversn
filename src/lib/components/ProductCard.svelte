@@ -22,7 +22,6 @@
     )
   );
 
-  $inspect(itemImages);
 </script>
 
 <!-- for both seo and performance -->

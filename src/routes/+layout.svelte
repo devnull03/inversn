@@ -13,7 +13,13 @@
   import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
   import Cart from "$lib/components/CartDrawer.svelte";
   import type { LayoutData } from "./$types";
-  import { categoriesCache, categoryItemsCache, imageCache } from "$lib/stores.svelte";
+  import {
+    cartData,
+    cartItems,
+    categoriesCache,
+    categoryItemsCache,
+    imageCache,
+  } from "$lib/stores.svelte";
   interface Props {
     children?: import("svelte").Snippet;
     data?: LayoutData;
@@ -42,6 +48,22 @@
       categoriesCache.set(data.categories);
       imageCache.set(data.images);
     }
+
+    BigInt.prototype.toJSON = function () {
+      return Number(this);
+    };
+
+    cartData.set(JSON.parse(localStorage.getItem("cartData") || "{}"));
+    cartData.subscribe((value) => {
+      localStorage.removeItem("cartData");
+      localStorage.setItem("cartData", JSON.stringify(value));
+    });
+
+    cartItems.set(JSON.parse(localStorage.getItem("cartItems") || "[]"));
+    cartItems.subscribe((value) => {
+      localStorage.removeItem("cartItems");
+      localStorage.setItem("cartItems", JSON.stringify(value));
+    });
   });
 </script>
 
@@ -97,18 +119,15 @@
 
 <Cart />
 
-{#key load}
-  <div
-    in:fade={{ duration: 400 }}
-    class="flex h-screen flex-col justify-between"
-  >
-    <Header />
-    <main class="mt-24">
-      {@render children?.()}
-    </main>
-    <Footer />
-  </div>
-{/key}
+<!-- {#key load} -->
+<div in:fade={{ duration: 400 }} class="flex h-screen flex-col justify-between">
+  <Header />
+  <main class="mt-24">
+    {@render children?.()}
+  </main>
+  <Footer />
+</div>
+<!-- {/key} -->
 
 {#if scrollY !== 0}
   <button
