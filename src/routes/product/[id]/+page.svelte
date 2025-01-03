@@ -1,6 +1,8 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { Button } from "$lib/components/ui/button";
+  import * as Select from "$lib/components/ui/select";
+  import * as Tooltip from "$lib/components/ui/tooltip";
   import {
     cartData,
     cartItems,
@@ -9,7 +11,8 @@
   } from "$lib/stores.svelte";
   import { formatPrice } from "$lib/utils";
   import { onMount, untrack } from "svelte";
-  import type { ActionData, PageData, PageServerData } from "./$types";
+  import type { ActionData, PageServerData } from "./$types";
+  import type { CatalogObject } from "square";
 
   let { data, form }: { data: PageServerData; form: ActionData } = $props();
 
@@ -22,13 +25,13 @@
     ) || []
   );
 
-  let selectedVariation = $state(data.product?.itemData?.variations?.[0]);
+  let selectedVariation = $state<CatalogObject | undefined>();
   // let selectedVariationId = $derived(selectedVariation?.id);
   let itemInCart = $derived(
     $cartItems.find((item) => item.variationId === selectedVariation?.id)
   );
 
-  // $inspect(data);
+  $inspect(data);
 
   $effect(() => {
     console.log(form);
@@ -64,9 +67,21 @@
     {#if buyNow}
       <input type="hidden" name="buyNow" value="true" />
     {/if}
-    <Button class="w-full" type="submit"
-      >{buyNow ? "Buy Now" : "Add to cart"}</Button
-    >
+
+    <Tooltip.Root openDelay={200}>
+      <Tooltip.Trigger>
+        <Button class="w-full" type="submit" disabled={!selectedVariation}>
+          {buyNow ? "Buy Now" : "Add to cart"}
+        </Button>
+      </Tooltip.Trigger>
+      <Tooltip.Content side="bottom">
+        {#if selectedVariation}
+          {buyNow ? "Proceed to checkout" : "Add this item to your cart"}
+        {:else}
+          Select a size
+        {/if}
+      </Tooltip.Content>
+    </Tooltip.Root>
   </form>
 {/snippet}
 
@@ -82,12 +97,30 @@
   </section>
 
   <section class="">
-    <div class="p-4">
+    <div class="p-4 flex flex-col gap-4">
       <h1 class="text-3xl">{data.product?.itemData?.name}</h1>
 
       <p>{formatPrice(itemBaseData?.priceMoney?.amount)}</p>
 
-      <div class="flex w-full justify-evenly">
+      <Select.Root>
+        <Select.Trigger class="w-[180px]">
+          <Select.Value placeholder="Size" />
+        </Select.Trigger>
+        <Select.Content>
+          {#each data.product?.itemData?.variations || [] as variation}
+            <Select.Item
+              value={variation.id}
+              on:click={() => {
+                selectedVariation = variation;
+              }}
+            >
+              {variation.itemVariationData?.name}
+            </Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+
+      <div class="flex gap-4">
         {#if itemInCart}
           <Button
             class="w-full"

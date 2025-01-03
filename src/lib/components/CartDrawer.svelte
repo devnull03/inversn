@@ -10,7 +10,10 @@
     quantityUp = amount > 0;
 
     cartItems.update((val) => {
-      if (val[index].quantity !== undefined && val[index].quantity + amount > 0) {
+      if (
+        val[index].quantity !== undefined &&
+        val[index].quantity + amount > 0
+      ) {
         val[index].quantity += amount;
       }
       return val;
@@ -28,7 +31,10 @@
         {#each $cartItems as item}
           <div class="flex flex-col gap-4 border-b border-black p-4">
             <h6 class="text-xl">{item.item?.itemData?.name}</h6>
-            <p class="text-sm">{item.variation?.itemOptionData?.values}</p>
+            <p class="text-sm">
+              {item.variationId} <br />
+              {item.variation?.itemVariationData?.name}
+            </p>
 
             <div class="flex gap-4 rounded border border-black p-2">
               <button
