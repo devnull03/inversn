@@ -1,7 +1,11 @@
 <script lang="ts">
   import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import { cartItems, cartOpen } from "$lib/stores.svelte";
+  import { cartData, cartItems, cartOpen } from "$lib/stores.svelte";
+  import { formatPrice } from "$lib/utils";
+  import { ScrollArea } from "$lib/components/ui/scroll-area";
   import { fade, fly, slide } from "svelte/transition";
+  import { Button } from "./ui/button";
+  import { goto } from "$app/navigation";
 
   let quantityUp = $state(true);
 
@@ -26,11 +30,18 @@
     <Sheet.Header>
       <Sheet.Title>Cart <i class="fa-solid fa-cart-shopping"></i></Sheet.Title>
       <Sheet.Description>Items in your cart</Sheet.Description>
+    </Sheet.Header>
 
+    <ScrollArea class="md:h-[80vh] h-[75vh] w-full">
       <div class="flex flex-col gap-4">
         {#each $cartItems as item}
           <div class="flex flex-col gap-4 border-b border-black p-4">
-            <h6 class="text-xl">{item.item?.itemData?.name}</h6>
+            <h6 class="text-2xl">{item.item?.itemData?.name}</h6>
+            <p>
+              {formatPrice(
+                item.variation?.itemVariationData?.priceMoney?.amount
+              )}
+            </p>
             <p class="text-sm">
               {item.variationId} <br />
               {item.variation?.itemVariationData?.name}
@@ -52,6 +63,18 @@
           </div>
         {/each}
       </div>
-    </Sheet.Header>
+    </ScrollArea>
+
+    <Sheet.Footer>
+      <div class="w-full border-t border-black pt-2 flex flex-col gap-4">
+        <p class="flex justify-between w-full">
+          <span>Total</span>
+          <span>{formatPrice($cartData.orderObject?.totalMoney?.amount)}</span>
+        </p>
+        <Button class="w-full" onclick={() => goto("/checkout")}
+          >Checkout</Button
+        >
+      </div>
+    </Sheet.Footer>
   </Sheet.Content>
 </Sheet.Root>
