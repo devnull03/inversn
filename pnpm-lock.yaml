@@ -32,6 +32,9 @@ importers:
       gsap:
         specifier: ^3.12.5
         version: 3.12.5
+      payu-sdk:
+        specifier: ^1.1.1
+        version: 1.1.1
       square:
         specifier: ^39.1.1
         version: 39.1.1
@@ -1150,6 +1153,9 @@ packages:
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
+
+  payu-sdk@1.1.1:
+    resolution: {integrity: sha512-OW5pSE1XRIdGt9RLa8TVI+H5V5L2p60+csFJBlcQsLNj4Mdrxf/nr7r5cmefVWG6YJtn+CUNul7sJU/LxpL8Yg==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -2412,6 +2418,8 @@ snapshots:
     dependencies:
       lru-cache: 10.4.3
       minipass: 7.1.2
+
+  payu-sdk@1.1.1: {}
 
   picocolors@1.1.1: {}
 

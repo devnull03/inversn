@@ -1,14 +1,4 @@
-import { MODE } from "$env/static/private"
-import axios from "axios"
-
-
-const delhiveryAPI = axios.create({
-	baseURL: `https://${MODE === 'prod' ? 'track' : 'staging-express'}.delhivery.com`,
-	headers: {
-		"Content-Type": "application/json",
-		"Authorization": `Token ${process.env.DELHIVERY_API_KEY}`
-	}
-})
+import { delhiveryAPI } from "$lib/server/clients.server";
 
 export const checkPincodeServiceability = async (pincode: string) => {
 	let url = `/c/api/pin-codes/json/?parameters`
@@ -32,6 +22,6 @@ export const createDehliveryOneShipment = async () => {
 
 }
 
-export const getTrackingDetails = async () => {}
+export const getTrackingDetails = async () => { }
 
-export const cancelShipment = async () => {}
+export const cancelShipment = async () => { }

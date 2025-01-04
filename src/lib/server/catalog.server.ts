@@ -1,5 +1,5 @@
 import { toast } from "svelte-sonner";
-import { catalogApi } from "./squareClient.server";
+import { catalogApi } from "./clients.server";
 import { categoriesCache, categoryItemsCache, imageCache } from "$lib/stores.svelte";
 import type { CatalogCategory, CatalogImage, CatalogObject, CatalogObjectCategory } from "square";
 

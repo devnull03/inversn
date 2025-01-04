@@ -71,8 +71,12 @@
           <span>Total</span>
           <span>{formatPrice($cartData.orderObject?.totalMoney?.amount)}</span>
         </p>
-        <Button class="w-full" onclick={() => goto("/checkout")}
-          >Checkout</Button
+        <Button
+          class="w-full"
+          onclick={() => {
+            $cartOpen = false;
+            goto("/checkout");
+          }}>Checkout</Button
         >
       </div>
     </Sheet.Footer>

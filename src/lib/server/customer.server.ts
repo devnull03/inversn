@@ -1,4 +1,4 @@
-import { customersApi } from "$lib/server/squareClient.server";
+import { customersApi } from "$lib/server/clients.server";
 
 
 export const createInitCustomer = async (name: string) => {

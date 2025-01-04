@@ -1,6 +1,5 @@
 import { MODE, PROD_LOCATION_ID, SANDBOX_LOCATION_ID } from "$env/static/private";
-import { ordersApi } from "$lib/server/squareClient.server";
-// import { PaymentHandler } from "./HdfcPaymentHandler.server";
+import { ordersApi } from "$lib/server/clients.server";
 import type { CartItem } from "$lib/models";
 import type { OrderLineItem } from "square";
 

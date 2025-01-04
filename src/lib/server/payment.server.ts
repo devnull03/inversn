@@ -1,35 +1,86 @@
-import { APIException, PaymentHandler } from "./HdfcPaymentHandler.server";
+import { MODE, PROD_PAYU_KEY, SANDBOX_PAYU_KEY } from '$env/static/private';
+import axios from 'axios';
+import { paymentsApi, payu } from '$lib/server/clients.server';
+import type { Order } from 'square';
 
 
-export const initiatePayment = async (orderId: string, amount: number) => {
-	// const orderId = `order_${Date.now()}`;
-	// const amount = 1 + crypto.randomInt(100);
-	// const returnUrl = `${req.protocol}://${req.hostname}:${port}/handlePaymentResponse`;
-	const returnUrl = "";
-	const paymentHandler = PaymentHandler.getInstance();
+export const createSquarePayment = async (order: Order, paymentType: "PayU" | "COD") => {
 	try {
-		const orderSessionResp = await paymentHandler.orderSession({
-			order_id: orderId,
-			amount,
-			currency: "INR",
-			return_url: returnUrl,
-			// [MERCHANT_TODO]:- please handle customer_id, it's an optional field but we suggest to use it.
-			customer_id: "sample-customer-id",
-			// please note you don't have to give payment_page_client_id here, it's mandatory but
-			// PaymentHandler will read it from config.json file
-
-			// payment_page_client_id: paymentHandler.getPaymentPageClientId()
+		const idempotencyKey = crypto.randomUUID();
+		const response = await paymentsApi.createPayment({
+			sourceId: 'EXTERNAL',
+			idempotencyKey,
+			amountMoney: {
+				amount: order.totalMoney?.amount,
+				currency: order.totalMoney?.currency
+			},
+			orderId: order.id,
+			externalDetails: {
+				type: 'OTHER',
+				source: paymentType
+			}
 		});
-		// return res.redirect(orderSessionResp.payment_links.web);
-	} catch (error) {
-		// [MERCHANT_TODO]:- please handle errors
-		if (error instanceof APIException) {
-			// return res.send("PaymentHandler threw some error");
-		}
-		// [MERCHANT_TODO]:- please handle errors
-		// return res.send("Something went wrong");
-	}
 
+		return response.result;
+	} catch (error) {
+		console.log(error);
+	}
 }
 
+export const initiatePayment = async (paymentData: any) => {
+
+	try {
+		let rawData = {
+			txnid: '', // TODO
+			amount: '',
+			productinfo: '',
+			firstname: '',
+			lastname: '',
+			email: '',
+			phone: '',
+			surl: '', // TODO
+			furl: '', // TODO
+			address1: '',
+			address2: '',
+			city: '',
+			state: '',
+			country: '',
+			zipcode: '',
+			udf1: '', // square order id
+		}
+
+		const hash = payu.hasher.generateHash(rawData)
+		const encodedParams = new URLSearchParams({ key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY, ...rawData, hash });
+		const url = MODE === 'prod' ? 'https://secure.payu.in/_payment' : 'https://test.payu.in/_payment'
+		const options = {
+			method: 'POST',
+			url,
+			headers: { accept: 'text/plain', 'content-type': 'application/x-www-form-urlencoded' },
+			data: encodedParams
+		};
+
+		const response = await axios.request(options);
+		const parsedResponse = new URLSearchParams(response.data);
+
+		const reverseHash = parsedResponse.get('hash');
+		const txnStatus = parsedResponse.get('status');
+
+		if (txnStatus !== 'success') throw new Error('Transaction failed');
+		if (!reverseHash || !txnStatus) throw new Error('Invalid response');
+
+		const isValidHash = payu.hasher.validateHash(reverseHash, {
+			status: txnStatus,
+		})
+
+		if (!isValidHash) throw new Error('Invalid hash');
+
+	} catch (error) {
+		console.error(error);
+		return { error };
+	}
+}
+
+export const verifyPayment = async (paymentData: any) => {
+
+}
 
