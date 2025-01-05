@@ -14,6 +14,7 @@
   import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import { PUBLIC_COMPANY_NAME } from "$env/static/public";
+  import Logo from "$lib/icons/Logo.svelte";
 
   let initScroll = $state(0);
   // let isLandingPage = $derived($page.route.id === "/");
@@ -37,8 +38,8 @@
 
 <nav class="realtive">
   {#if !isLandingPage}
-    <div class="fixed left-[6%] top-4 z-[55] aspect-square h-16 w-16 invert">
-      <!-- <Logo /> -->
+    <div class="fixed left-[6%] top-6 z-[55] aspect-square h-10">
+      <Logo class="fill-background" />
     </div>
   {/if}
 
@@ -46,7 +47,7 @@
     class="fixed top-0 z-50 flex h-24 w-full flex-row justify-between border-b px-[6%] {initScroll <
       $scrollThreshold && isLandingPage
       ? 'border-transparent bg-transparent'
-      : 'bg-white'} border-black transition-all duration-500 ease-in-out"
+      : 'bg-primary text-background'} border-black transition-all duration-500 ease-in-out"
   >
     <button
       class="flex items-center pl-20 font-[Cantarell] text-xl lg:text-2xl"
@@ -60,7 +61,7 @@
       class="absolute right-4 top-0 px-8 py-10 md:hidden lg:hidden {initScroll <
         $scrollThreshold && isLandingPage
         ? 'text-white'
-        : 'text-black'}"
+        : 'text-white'}"
       bind:clientWidth={mobileNavButtonWidth}
       onclick={() => (mobileNavOpen = !mobileNavOpen)}
     >
@@ -74,7 +75,7 @@
     {#if !$isMobile || mobileNavOpen}
       <div
         transition:slide
-        class="absolute top-24 z-[999] -mx-[6%] flex w-screen flex-col items-center justify-evenly gap-8 border-b border-black bg-white py-4 md:relative md:top-0 md:mx-0 md:w-auto md:flex-row md:border-transparent md:bg-transparent md:py-0"
+        class="absolute top-24 z-[999] -mx-[6%] flex w-screen flex-col items-center justify-evenly gap-8 border-b border-black py-4 md:relative md:top-0 md:mx-0 md:w-auto md:flex-row md:border-transparent md:bg-transparent md:py-0"
       >
         <!-- nav buttons -->
         <button

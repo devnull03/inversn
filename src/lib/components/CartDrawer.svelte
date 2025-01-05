@@ -27,45 +27,48 @@
 
 <Sheet.Root bind:open={$cartOpen}>
   <Sheet.Content>
-    <Sheet.Header>
-      <Sheet.Title>Cart <i class="fa-solid fa-cart-shopping"></i></Sheet.Title>
-      <Sheet.Description>Items in your cart</Sheet.Description>
-    </Sheet.Header>
+    <div class="h-full flex flex-col justify-between">
+      <div>
+        <Sheet.Header>
+          <Sheet.Title
+            >Cart <i class="fa-solid fa-cart-shopping"></i></Sheet.Title
+          >
+          <Sheet.Description>Items in your cart</Sheet.Description>
+        </Sheet.Header>
 
-    <ScrollArea class="md:h-[80vh] h-[75vh] w-full">
-      <div class="flex flex-col gap-4">
-        {#each $cartItems as item}
-          <div class="flex flex-col gap-4 border-b border-black p-4">
-            <h6 class="text-2xl">{item.item?.itemData?.name}</h6>
-            <p>
-              {formatPrice(
-                item.variation?.itemVariationData?.priceMoney?.amount
-              )}
-            </p>
-            <p class="text-sm">
-              {item.variationId} <br />
-              {item.variation?.itemVariationData?.name}
-            </p>
+        <ScrollArea class="w-full">
+          <div class="flex flex-col gap-4">
+            {#each $cartItems as item}
+              <div class="flex flex-col gap-4 border-b border-black p-4">
+                <h6 class="text-2xl">{item.item?.itemData?.name}</h6>
+                <p>
+                  {formatPrice(
+                    item.variation?.itemVariationData?.priceMoney?.amount
+                  )}
+                </p>
+                <p class="text-sm">
+                  {item.variationId} <br />
+                  {item.variation?.itemVariationData?.name}
+                </p>
 
-            <div class="flex gap-4 rounded border border-black p-2">
-              <button
-                onclick={() => changeQuantity(item.variationId, -1)}
-                class="">-</button
-              >
-              {#key item.quantity}
-                <span in:slide>{item.quantity}</span>
-              {/key}
-              <button
-                onclick={() => changeQuantity(item.variationId, 1)}
-                class="">+</button
-              >
-            </div>
+                <div class="flex gap-4 rounded border border-black p-2">
+                  <button
+                    onclick={() => changeQuantity(item.variationId, -1)}
+                    class="">-</button
+                  >
+                  {#key item.quantity}
+                    <span in:slide>{item.quantity}</span>
+                  {/key}
+                  <button
+                    onclick={() => changeQuantity(item.variationId, 1)}
+                    class="">+</button
+                  >
+                </div>
+              </div>
+            {/each}
           </div>
-        {/each}
+        </ScrollArea>
       </div>
-    </ScrollArea>
-
-    <Sheet.Footer>
       <div class="w-full border-t border-black pt-2 flex flex-col gap-4">
         <p class="flex justify-between w-full">
           <span>Total</span>
@@ -75,10 +78,10 @@
           class="w-full"
           onclick={() => {
             $cartOpen = false;
-            goto("/checkout");
+            goto(`/checkout/${$cartData.orderObject?.id}`);
           }}>Checkout</Button
         >
       </div>
-    </Sheet.Footer>
+    </div>
   </Sheet.Content>
 </Sheet.Root>
