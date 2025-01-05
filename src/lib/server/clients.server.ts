@@ -25,7 +25,4 @@ export const delhiveryAPI = axios.create({
 	}
 })
 
-export const payu = require('payu-sdk')({
-	key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY,
-	salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT,
-});
+

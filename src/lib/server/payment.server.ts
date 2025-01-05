@@ -1,6 +1,6 @@
-import { MODE, PROD_PAYU_KEY, SANDBOX_PAYU_KEY } from '$env/static/private';
+import { MODE, PROD_PAYU_KEY, PROD_PAYU_SALT, SANDBOX_PAYU_KEY, SANDBOX_PAYU_SALT } from '$env/static/private';
 import axios from 'axios';
-import { paymentsApi, payu } from '$lib/server/clients.server';
+import { paymentsApi } from '$lib/server/clients.server';
 import type { Order } from 'square';
 
 
@@ -27,8 +27,7 @@ export const createSquarePayment = async (order: Order, paymentType: "PayU" | "C
 	}
 }
 
-export const initiatePayment = async (paymentData: any) => {
-
+export const initiatePayment = async (order: Order, ) => {
 	try {
 		let rawData = {
 			txnid: '', // TODO
@@ -48,6 +47,11 @@ export const initiatePayment = async (paymentData: any) => {
 			zipcode: '',
 			udf1: '', // square order id
 		}
+
+		const payu = require('payu-sdk')({
+			key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY,
+			salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT,
+		});
 
 		const hash = payu.hasher.generateHash(rawData)
 		const encodedParams = new URLSearchParams({ key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY, ...rawData, hash });
