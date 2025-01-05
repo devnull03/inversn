@@ -5,7 +5,6 @@ import type { OrderLineItem } from "square";
 
 
 const buildLineItems = (items: CartItem[]): OrderLineItem[] => {
-
 	let lineItems: OrderLineItem[] = [];
 	for (let item of items) {
 		lineItems.push({
@@ -17,14 +16,9 @@ const buildLineItems = (items: CartItem[]): OrderLineItem[] => {
 }
 
 export const createCart = async (initCartItems: CartItem[]) => {
-
 	try {
 		const idempotencyKey = crypto.randomUUID()
 		const lineItems = buildLineItems(initCartItems);
-
-		console.debug(lineItems);
-		
-
 		const response = await ordersApi.createOrder({
 			order: {
 				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
@@ -36,8 +30,6 @@ export const createCart = async (initCartItems: CartItem[]) => {
 			},
 			idempotencyKey
 		});
-
-		// console.log(response.result);
 		return {
 			orderId: response.result.order?.id,
 			orderVersion: response.result.order?.version,
@@ -47,15 +39,12 @@ export const createCart = async (initCartItems: CartItem[]) => {
 	} catch (error) {
 		console.log(error);
 	}
-
 }
 
 export const addToCart = async (orderId: string, orderVersion: number, newCartItems: CartItem[]) => {
-
 	try {
 		const idempotencyKey = crypto.randomUUID()
 		const lineItems = buildLineItems(newCartItems);
-
 		const response = await ordersApi.updateOrder(orderId, {
 			order: {
 				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
@@ -64,8 +53,6 @@ export const addToCart = async (orderId: string, orderVersion: number, newCartIt
 			},
 			idempotencyKey
 		});
-
-		// console.log(response.result);
 		return {
 			orderId: response.result.order?.id,
 			orderVersion: response.result.order?.version,
@@ -77,4 +64,24 @@ export const addToCart = async (orderId: string, orderVersion: number, newCartIt
 	}
 }
 
-export const createSquareOrder = async () => { }
+export const createSquareOrder = async (orderId: string, orderVersion: number) => {
+	try {
+		const idempotencyKey = crypto.randomUUID()
+		const response = await ordersApi.updateOrder(orderId, {
+			order: {
+				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
+				version: orderVersion,
+				state: 'OPEN',
+			},
+			idempotencyKey
+		});
+		return {
+			orderId: response.result.order?.id,
+			orderVersion: response.result.order?.version,
+			order: response.result.order,
+			idempotencyKey,
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
