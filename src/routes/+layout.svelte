@@ -4,13 +4,9 @@
   import { fade } from "svelte/transition";
   // import { navigating } from "$app/state";
   import { PUBLIC_COMPANY_NAME, PUBLIC_DOMAIN } from "$env/static/public";
-  import { dev } from "$app/environment";
-
-  import { injectAnalytics } from "@vercel/analytics/sveltekit";
   import Footer from "$lib/components/Footer.svelte";
   import Header from "$lib/components/Header.svelte";
   import { Toaster } from "$lib/components/ui/sonner";
-  import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
   import Cart from "$lib/components/CartDrawer.svelte";
   import type { LayoutData } from "./$types";
   import {
@@ -21,6 +17,8 @@
   } from "$lib/stores.svelte";
   import type { CartItem } from "$lib/models";
   import { page } from "$app/state";
+
+
   interface Props {
     children?: import("svelte").Snippet;
     data?: LayoutData;
@@ -45,9 +43,6 @@
     placename: "India",
     region: "IN",
   };
-
-  injectAnalytics({ mode: dev ? "development" : "production" });
-  injectSpeedInsights();
 
   onMount(async () => {
     firstLoad = false;
