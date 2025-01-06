@@ -62,7 +62,7 @@
 <main
   class="flex flex-col items-center justify-evenly w-screen h-screen font-[Afacad] bg-primary/45 *:w-4/5 *:md:w-1/4"
 >
-  <!-- {@render marquee("box-inverted", "top")} -->
+  {@render marquee("box-inverted", "top")}
 
   <div class="flex flex-col items-center justify-center gap-4">
     <Logo class="w-20 h-20 aspect-square" color="white" />
