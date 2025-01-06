@@ -8,8 +8,10 @@ import { dev } from '$app/environment';
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 
 	//? COMING SOON
-	if (MODE === 'prod' && !dev && url.pathname !== '/coming-soon') {
-		redirect(303, '/coming-soon');
+	if (MODE === 'prod' && !dev) {
+		if (url.pathname !== '/coming-soon')
+			redirect(303, '/coming-soon');
+		return {}
 	};
 
 	const orderId = cookies.get('orderId');
