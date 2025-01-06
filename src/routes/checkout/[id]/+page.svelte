@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { superForm } from "sveltekit-superforms";
+  import {
+    superForm,
+    type Infer,
+    type SuperValidated,
+  } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as Form from "$lib/components/ui/form";
   import {
