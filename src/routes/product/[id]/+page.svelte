@@ -3,15 +3,12 @@
   import { Button } from "$lib/components/ui/button";
   import * as Select from "$lib/components/ui/select";
   import * as Tooltip from "$lib/components/ui/tooltip";
-  import {
-    cartData,
-    cartItems,
-    cartOpen,
-  } from "$lib/stores.svelte";
+  import { cartData, cartItems, cartOpen } from "$lib/stores.svelte";
   import { formatPrice } from "$lib/utils";
   import { onMount } from "svelte";
   import type { ActionData, PageServerData } from "./$types";
   import type { CatalogObject } from "square";
+  import Reload from "svelte-radix/Reload.svelte";
 
   let { data, form }: { data: PageServerData; form: ActionData } = $props();
 
@@ -30,17 +27,19 @@
     $cartItems.find((item) => item.variationId === selectedVariation?.id)
   );
 
+  let formLoading = $state(false);
+
   $inspect(data);
 
   $effect(() => {
     console.log(form);
     if (form) {
-        cartData.update((val) => {
-          val.orderId = form.orderId;
-          val.orderVersion = form.orderVersion;
-          val.orderObject = form.order;
-          return val;
-        });
+      cartData.update((val) => {
+        val.orderId = form.orderId;
+        val.orderVersion = form.orderVersion;
+        val.orderObject = form.order;
+        return val;
+      });
 
       cartItems.update((val) => {
         val.push({
@@ -48,6 +47,7 @@
           variation: selectedVariation,
           variationId: form.variationId,
           quantity: 1,
+          image: itemImages[0],
         });
         return val;
       });
@@ -58,7 +58,17 @@
 </script>
 
 {#snippet actionButton(buyNow: boolean)}
-  <form use:enhance method="POST">
+  <form
+    use:enhance={() => {
+      formLoading = true;
+      return async ({ update }) => {
+        update();
+        $cartOpen = true;
+        formLoading = false;
+      };
+    }}
+    method="POST"
+  >
     <input type="hidden" name="variationId" value={selectedVariation?.id} />
     <input type="hidden" name="orderId" value={$cartData?.orderId} />
     <input type="hidden" name="orderVersion" value={$cartData?.orderVersion} />
@@ -68,7 +78,14 @@
 
     <Tooltip.Root openDelay={200}>
       <Tooltip.Trigger>
-        <Button class="w-full" type="submit" disabled={!selectedVariation}>
+        <Button
+          class="w-full"
+          type="submit"
+          disabled={!selectedVariation || formLoading}
+        >
+          {#if formLoading}
+            <Reload class="mr-2 h-4 w-4 animate-spin" />
+          {/if}
           {buyNow ? "Buy Now" : "Add to cart"}
         </Button>
       </Tooltip.Trigger>

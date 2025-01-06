@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { slide } from "svelte/transition";
   import * as Sheet from "$lib/components/ui/sheet/index.js";
   import { cartData, cartItems, cartOpen } from "$lib/stores.svelte";
   import { formatPrice } from "$lib/utils";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
-  import { fade, fly, slide } from "svelte/transition";
-  import { Button } from "./ui/button";
-  import { goto } from "$app/navigation";
+  import { Button } from "$lib/components/ui/button";
+  import Reload from "svelte-radix/Reload.svelte";
 
   let quantityUp = $state(true);
 
@@ -23,6 +24,8 @@
       return val;
     });
   };
+
+  let checkoutLoading = $state(false);
 </script>
 
 <Sheet.Root bind:open={$cartOpen}>
@@ -36,10 +39,10 @@
           <Sheet.Description>Items in your cart</Sheet.Description>
         </Sheet.Header>
 
-        <ScrollArea class="w-full">
+        <ScrollArea class="w-full h-[80vh]">
           <div class="flex flex-col gap-4">
             {#each $cartItems as item}
-              <div class="flex flex-col gap-4 border-b border-black p-4">
+              <div class="flex flex-col gap-4 border-b border-black last:border-none p-4">
                 <h6 class="text-2xl">{item.item?.itemData?.name}</h6>
                 <p>
                   {formatPrice(
@@ -76,11 +79,20 @@
         </p>
         <Button
           class="w-full"
+          disabled={Number($cartData.orderObject?.totalMoney?.amount) <= 0 ||
+            checkoutLoading}
           onclick={() => {
+            checkoutLoading = true;
             $cartOpen = false;
             goto(`/checkout/${$cartData.orderObject?.id}`);
-          }}>Checkout</Button
+            checkoutLoading = false;
+          }}
         >
+          {#if checkoutLoading}
+            <Reload />
+          {/if}
+          Checkout
+        </Button>
       </div>
     </div>
   </Sheet.Content>
