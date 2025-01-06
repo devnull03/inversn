@@ -18,7 +18,6 @@
   import type { CartItem } from "$lib/models";
   import { page } from "$app/state";
 
-
   interface Props {
     children?: import("svelte").Snippet;
     data?: LayoutData;
@@ -64,20 +63,20 @@
     cartData.update((v) => {
       v.orderId = data?.orderData?.orderId;
       v.orderVersion = Number.parseInt(data?.orderData?.orderVersion as string);
-      v.orderObject = data?.orderData.orderObject;
+      v.orderObject = data?.orderData?.orderObject;
       return v;
     });
 
     customerData.update((v) => {
       v.customerId = data?.customerData?.customerId;
-      v.customerObject = data?.customerData.customerObject;
+      v.customerObject = data?.customerData?.customerObject;
       return v;
     });
 
     let __cartItems: CartItem[] = [];
 
-    for (let entry of data?.orderData.orderLineItems?.objects || []) {
-      let entryItem = data?.orderData.orderLineItems?.relatedObjects?.find(
+    for (let entry of data?.orderData?.orderLineItems?.objects || []) {
+      let entryItem = data?.orderData?.orderLineItems?.relatedObjects?.find(
         (item) => item.id === entry.itemVariationData?.itemId
       );
 
