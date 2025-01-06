@@ -54,7 +54,7 @@
   muted
   playsinline
   poster="/coming-soon/poster.jpg"
-  class="w-full h-full object-cover fixed top-0 left-0 z-[-1] opacity-50"
+  class="w-full h-full object-cover fixed top-0 left-0 z-[-1] *:opacity-50 opacity-50"
 >
   <source src="/coming-soon/bg.webm" type="video/webm" />
   <source src="/coming-soon/bg.mp4" type="video/mp4" />
