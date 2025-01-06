@@ -1,8 +1,8 @@
 <script lang="ts">
   import "../app.css";
   import { onMount } from "svelte";
-  import { fade, fly } from "svelte/transition";
-  import { navigating } from "$app/stores";
+  import { fade } from "svelte/transition";
+  // import { navigating } from "$app/state";
   import { PUBLIC_COMPANY_NAME, PUBLIC_DOMAIN } from "$env/static/public";
   import { dev } from "$app/environment";
 
@@ -17,9 +17,9 @@
     cartData,
     cartItems,
     categoriesCache,
-    categoryItemsCache,
-    imageCache,
+    customerData,
   } from "$lib/stores.svelte";
+  import type { CartItem } from "$lib/models";
   interface Props {
     children?: import("svelte").Snippet;
     data?: LayoutData;
@@ -29,7 +29,7 @@
   let { children, data }: Props = $props();
 
   let firstLoad = $state(true);
-  let load = $derived(firstLoad || !$navigating);
+  // let load = $derived(firstLoad || !$navigating);
 
   const siteData = {
     description: "",
@@ -44,26 +44,60 @@
   onMount(async () => {
     firstLoad = false;
 
-    if (data) {
-      categoriesCache.set(data.categories);
-      imageCache.set(data.images);
-    }
-
     BigInt.prototype.toJSON = function () {
       return Number(this);
     };
 
+    categoriesCache.set(data?.categories || []);
+
     cartData.set(JSON.parse(localStorage.getItem("cartData") || "{}"));
     cartData.subscribe((value) => {
       localStorage.removeItem("cartData");
+      console.log(value);
+
       localStorage.setItem("cartData", JSON.stringify(value));
     });
 
-    cartItems.set(JSON.parse(localStorage.getItem("cartItems") || "[]"));
-    cartItems.subscribe((value) => {
-      localStorage.removeItem("cartItems");
-      localStorage.setItem("cartItems", JSON.stringify(value));
+    cartData.update((v) => {
+      v.orderId = data?.orderData?.orderId;
+      v.orderVersion = Number.parseInt(data?.orderData?.orderVersion as string);
+      v.orderObject = data?.orderData.orderObject;
+      return v;
     });
+
+    customerData.update((v) => {
+      v.customerId = data?.customerData?.customerId;
+      v.customerObject = data?.customerData.customerObject;
+      return v;
+    });
+
+    let __cartItems: CartItem[] = [];
+
+    for (let entry of data?.orderData.orderLineItems?.objects || []) {
+      let entryItem = data?.orderData.orderLineItems?.relatedObjects?.find(
+        (item) => item.id === entry.itemVariationData?.itemId
+      );
+
+      let cartItem: CartItem = {
+        variation: entry,
+        variationId: entry.id,
+        item: entryItem,
+        quantity: Number.parseInt(
+          data?.orderData.orderObject?.lineItems?.find(
+            (lineItem) => lineItem.catalogObjectId === entry.id
+          )?.quantity as string
+        ),
+        image: data?.orderData.orderLineItems?.relatedObjects?.find(
+          (img) =>
+            img.type === "IMAGE" &&
+            entryItem?.itemData?.imageIds?.includes(img.id)
+        ),
+      };
+
+      __cartItems.push(cartItem);
+    }
+
+    cartItems.set(__cartItems);
   });
 </script>
 

@@ -1,19 +1,11 @@
 <script lang="ts">
-  import Instagram from "$lib/icons/Instagram.svelte";
-  import PhoneCall from "$lib/icons/PhoneCall.svelte";
-  import { Button, buttonVariants } from "$lib/components/ui/button";
-  import { gsap } from "gsap";
   import { onMount } from "svelte";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { Title } from "$lib/components/ui/card";
-  import { Slider } from "$lib/components/ui/slider";
-  import { Input } from "$lib/components/ui/input";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { cartOpen, isMobile, scrollThreshold } from "$lib/stores.svelte";
-  import { slide } from "svelte/transition";
-  import { toast } from "svelte-sonner";
   import { PUBLIC_COMPANY_NAME } from "$env/static/public";
+  import { goto } from "$app/navigation";
+  import { slide } from "svelte/transition";
+  // import * as Dialog from "$lib/components/ui/dialog";
+  // import { toast } from "svelte-sonner";
+  import { cartOpen, isMobile, scrollThreshold } from "$lib/stores.svelte";
   import Logo from "$lib/icons/Logo.svelte";
 
   let initScroll = $state(0);
@@ -83,6 +75,10 @@
           class="fa-solid fa-cart-shopping text-xl"
           aria-label="Toggle cart"
         ></button>
+
+        <button class="fa-solid fa-user text-xl" aria-label="login"
+        ></button>
+
       </div>
     {/if}
   </div>

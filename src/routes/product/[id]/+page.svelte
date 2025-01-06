@@ -7,10 +7,9 @@
     cartData,
     cartItems,
     cartOpen,
-    imageCache,
   } from "$lib/stores.svelte";
   import { formatPrice } from "$lib/utils";
-  import { onMount, untrack } from "svelte";
+  import { onMount } from "svelte";
   import type { ActionData, PageServerData } from "./$types";
   import type { CatalogObject } from "square";
 

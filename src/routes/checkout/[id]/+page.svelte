@@ -1,14 +1,18 @@
 <script lang="ts">
-  import { Checkbox } from "$lib/components/ui/checkbox";
-  import * as Form from "$lib/components/ui/form";
-  import { Input } from "$lib/components/ui/input";
-  import * as Select from "$lib/components/ui/select";
-  import { formSchema, IndianStates } from "$lib/components/form/schema";
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
-  import FormSelect from "$lib/components/form/FormSelect.svelte";
-  import FormInput from "$lib/components/form/FormInput.svelte";
-  import FormCheckbox from "$lib/components/form/FormCheckbox.svelte";
+  import * as Form from "$lib/components/ui/form";
+  import {
+    formSchema,
+    FormInput,
+    FormCheckbox,
+    FormSelect,
+    type FormSchema,
+    IndianStates,
+  } from "$lib/components/form";
+  // import { Input } from "$lib/components/ui/input";
+  // import { Checkbox } from "$lib/components/ui/checkbox";
+  // import * as Select from "$lib/components/ui/select";
 
   let { data } = $props();
 
@@ -19,23 +23,6 @@
   const { form: formData, enhance } = form;
 
   $inspect($formData);
-
-  let selectedState = $derived(
-    $formData.state
-      ? {
-          label: $formData.state,
-          value: $formData.state,
-        }
-      : undefined
-  );
-  let selectedPhoneCountryCode = $derived(
-    $formData.phoneCountryCode
-      ? {
-          label: $formData.phoneCountryCode,
-          value: $formData.phoneCountryCode,
-        }
-      : undefined
-  );
 </script>
 
 <main class="w-full *:p-16 flex">
@@ -57,7 +44,6 @@
           name="emailOffers"
           label="Email me with news and offers"
         />
-
       </div>
 
       <div class="">

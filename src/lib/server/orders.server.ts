@@ -4,6 +4,18 @@ import type { CartItem } from "$lib/models";
 import type { OrderLineItem } from "square";
 
 
+export const getOrder = async (orderId: string) => {
+
+	try {
+		const response = await ordersApi.retrieveOrder(orderId);
+		return response.result.order;
+	} catch (error) {
+		console.log(error);
+		return undefined;
+	}
+
+}
+
 const buildLineItems = (items: CartItem[]): OrderLineItem[] => {
 	let lineItems: OrderLineItem[] = [];
 	for (let item of items) {

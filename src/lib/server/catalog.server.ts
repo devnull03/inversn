@@ -1,41 +1,49 @@
-import { toast } from "svelte-sonner";
 import { catalogApi } from "./clients.server";
-import { categoriesCache, categoryItemsCache, imageCache } from "$lib/stores.svelte";
-import type { CatalogCategory, CatalogImage, CatalogObject, CatalogObjectCategory } from "square";
+import type { SearchCatalogObjectsRequest } from "square";
+import { getOrder } from "./orders.server";
+import { getCustomer } from "./customer.server";
 
 const FETCH_LIMIT = 100;
 
-export const getCategoriesAndImages = async (categoryCursor?: string, imageCursor?: string) => {
+export const getInitObjects = async (orderId: string | undefined, customerId: string | undefined) => {
 	try {
-
-		type CatalogSearchParams = { objectTypes: string[], limit: number, cursor?: string }
-
-		let categoryCatalogSearchParams: CatalogSearchParams = {
+		const landingPageCategoryName = "Home";
+		let categoryCatalogSearchParams: SearchCatalogObjectsRequest = {
 			objectTypes: ["CATEGORY"],
 			limit: FETCH_LIMIT,
 		}
-		if (categoryCursor) categoryCatalogSearchParams.cursor = categoryCursor;
 
-		let imageCatalogSearchParams: CatalogSearchParams = {
-			objectTypes: ["IMAGE"],
-			limit: FETCH_LIMIT,
-		}
-		if (imageCursor) imageCatalogSearchParams.cursor = imageCursor;
+		const [categoryResponse, orderResponse, customerResponse] = await Promise.all([
+			catalogApi.searchCatalogObjects(categoryCatalogSearchParams),
+			orderId ? getOrder(orderId) : undefined,
+			customerId ? getCustomer(customerId) : undefined,
+		]);
 
-		const [categoryResponse, imageResponse] = await Promise.all([catalogApi.searchCatalogObjects(categoryCatalogSearchParams), catalogApi.searchCatalogObjects(imageCatalogSearchParams)]);
+		if (categoryResponse.result.errors) throw categoryResponse.result.errors;
+
+		let landingPageCategoryId = categoryResponse.result?.objects?.find(category => category.categoryData?.name === landingPageCategoryName)?.id;
+		let OrderLineItems = orderResponse?.lineItems?.map((lineItem) => lineItem.catalogObjectId as string)
+
+		const [landingPageItemsResponse, OrderLineItemsResponse] = await Promise.all([
+			landingPageCategoryId ? getCategoryItems(landingPageCategoryId) : undefined,
+			orderId && OrderLineItems ? catalogApi.batchRetrieveCatalogObjects({
+				objectIds: OrderLineItems,
+				includeRelatedObjects: true,
+			}) : undefined,
+		]);
 
 		return {
-			categories: categoryResponse.result.objects || [],
-			categoryCursor: categoryResponse.result.cursor,
+			orderObject: orderResponse,
+			orderLineItems: OrderLineItemsResponse?.result,
+			customerObject: customerResponse,
 
-			images: imageResponse.result.objects || [],
-			imageCursor: imageResponse.result.cursor,
+			categories: categoryResponse.result.objects || [],
+			landingPage: landingPageItemsResponse,
 		}
 
 	} catch (error: any) {
-		toast.error(`${error.category}: Failed to fetch categories`);
 		console.error(error);
-		return { categoryCursor: undefined, imageCursor: undefined, categories: [], images: [] };
+		return { error };
 	}
 
 }
@@ -43,19 +51,24 @@ export const getCategoriesAndImages = async (categoryCursor?: string, imageCurso
 export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 	try {
 
-		type CatalogSearchParams = { categoryIds: string[], limit: number, cursor?: string }
-		let catalogSearchParams: CatalogSearchParams = {
-			categoryIds: [categoryId],
+		let catalogSearchParams: SearchCatalogObjectsRequest = {
+			objectTypes: ["ITEM"],
+			includeRelatedObjects: true,
+			query: {
+				exactQuery: {
+					attributeName: 'categories',
+					attributeValue: categoryId,
+				}
+			},
 			limit: FETCH_LIMIT,
 		}
 		if (cursor) catalogSearchParams.cursor = cursor;
 
-		const response = await catalogApi.searchCatalogItems(catalogSearchParams);
+		const response = await catalogApi.searchCatalogObjects(catalogSearchParams);
 
 		return response.result;
 
 	} catch (error: any) {
-		toast.error(`${error.category}: Failed to fetch category items`);
 		console.error(error);
 		return {};
 	}
@@ -65,11 +78,10 @@ export const getItem = async (itemId: string) => {
 	try {
 		const response = await catalogApi.retrieveCatalogObject(itemId, true);
 		// console.log(response.result);
-		
+
 		return response.result;
 
 	} catch (error: any) {
-		toast.error(`${error.category}: Failed to fetch item`);
 		console.error(error);
 		return {};
 	}

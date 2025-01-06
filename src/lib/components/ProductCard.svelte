@@ -2,26 +2,20 @@
   import type { CatalogObject } from "square";
   import * as Card from "$lib/components/ui/card";
   import * as Carousel from "$lib/components/ui/carousel/index.js";
-  import { imageCache } from "$lib/stores.svelte";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { formatPrice } from "$lib/utils";
 
   interface Props {
     productData: CatalogObject;
+    productImages: CatalogObject[];
   }
 
-  let { productData }: Props = $props();
+  let { productData, productImages }: Props = $props();
 
   let itemBaseData = $derived(
     productData.itemData?.variations?.[0].itemVariationData
   );
-  let itemImages = $derived(
-    $imageCache.filter((img) =>
-      productData.itemData?.imageIds?.includes(img.id)
-    )
-  );
-
 </script>
 
 <!-- for both seo and performance -->
@@ -31,7 +25,7 @@
   <Card.Content class="p-1 h-full">
     <Carousel.Root class="h-full border rounded-lg group overflow-hidden">
       <Carousel.Content>
-        {#each itemImages as imageObj}
+        {#each productImages as imageObj}
           <Carousel.Item
             class="h-full aspect-[0.8] object-cover"
             onclick={() => goto(`/product/${productData.id}`)}
@@ -45,7 +39,7 @@
         {/each}
       </Carousel.Content>
 
-      {#if itemImages.length > 1}
+      {#if productImages.length > 1}
         <Carousel.Previous
           class="translate-x-14 group-hover:inline-flex hidden"
         />
@@ -56,7 +50,7 @@
 
   <Card.Footer class="p-3 pt-0">
     <a
-      href={`${$page.url.origin}/product/${productData.id}`}
+      href={`${page.url.origin}/product/${productData.id}`}
       onclick={(e) => {
         e.preventDefault();
         goto(`/product/${productData.id}`);

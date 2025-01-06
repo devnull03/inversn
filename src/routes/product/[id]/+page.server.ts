@@ -1,8 +1,6 @@
 import { getItem } from "$lib/server/catalog.server";
-import { categoryItemsCache } from "$lib/stores.svelte";
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { createInitCustomer } from "$lib/server/customer.server";
 import { addToCart, createCart } from "$lib/server/orders.server";
 
 
@@ -32,8 +30,6 @@ export const actions: Actions = {
 
 		if (!variationId) return error(400, 'Missing variationId');
 
-		// console.log(`variationId: ${variationId}, orderId: ${orderId}, buyNow: ${buyNow}`);
-
 		let res;
 		if (orderId) {
 			if (!orderVersion) return error(400, 'Missing orderVersion');
@@ -46,6 +42,10 @@ export const actions: Actions = {
 			res = await addToCart(orderId, parsedOrderVersion, [{ variationId, quantity: 1 }]);
 		} else {
 			res = await createCart([{ variationId, quantity: 1 }]);
+			if (res?.orderId)
+				event.cookies.set('orderId', res.orderId, { path: '/' });
+			if (res?.orderVersion)
+				event.cookies.set('orderVersion', res.orderVersion.toString(), { path: '/' });
 		}
 
 		if (buyNow === "true") {

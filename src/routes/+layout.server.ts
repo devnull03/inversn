@@ -1,24 +1,36 @@
 import type { LayoutServerLoad } from './$types';
-import { getCategoriesAndImages, getCategoryItems } from "$lib/server/catalog.server";
-import { categoriesCache, imageCache } from "$lib/stores.svelte";
-import type { CatalogObject, SearchCatalogItemsResponse } from 'square';
+import { getInitObjects } from "$lib/server/catalog.server";
+import { error } from '@sveltejs/kit';
 
 
-export const load: LayoutServerLoad = async () => {
+export const load: LayoutServerLoad = async ({ cookies }) => {
 
-	const landingPageCategoryName = "Home";
+	const orderId = cookies.get('orderId');
+	const customerId = cookies.get('customerId');
 
-	const { categories, images } = await getCategoriesAndImages();
+	const initObjects = await getInitObjects(orderId, customerId);
 
-	let landingPageCategoryId = categories.find(category => category.categoryData?.name === landingPageCategoryName)?.id;
-	let res: SearchCatalogItemsResponse = {};
-	if (landingPageCategoryId) {
-		res = await getCategoryItems(landingPageCategoryId);
+	if (initObjects.error) {
+		console.error(initObjects.error);
+		error(500, 'Internal Server Error');
 	}
 
+	cookies.set('customerId', initObjects.customerObject?.id || '', { path: '/' });
+	cookies.set('orderId', initObjects.orderObject?.id || '', { path: '/' });
+	cookies.set('orderVersion', initObjects.orderObject?.version?.toString() || '', { path: '/' });
+
 	return {
-		categories,
-		images,
-		landingPageItems: res.items || []
+		categories: initObjects.categories,
+		landingPageItems: initObjects.landingPage,
+		orderData: {
+			orderId: cookies.get('orderId'),
+			orderVersion: cookies.get('orderVersion'),
+			orderObject: initObjects.orderObject,
+			orderLineItems: initObjects.orderLineItems
+		},
+		customerData: {
+			customerId: cookies.get('customerId'),
+			customerObject: initObjects.customerObject
+		}
 	}
 };
