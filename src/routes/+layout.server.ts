@@ -1,9 +1,16 @@
 import type { LayoutServerLoad } from './$types';
 import { getInitObjects } from "$lib/server/catalog.server";
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
+import { MODE } from '$env/static/private';
+import { dev } from '$app/environment';
 
 
-export const load: LayoutServerLoad = async ({ cookies }) => {
+export const load: LayoutServerLoad = async ({ cookies, url }) => {
+
+	//? COMING SOON
+	if (MODE === 'prod' && !dev && url.pathname !== '/coming-soon') {
+		redirect(303, '/coming-soon');
+	};
 
 	const orderId = cookies.get('orderId');
 	const customerId = cookies.get('customerId');

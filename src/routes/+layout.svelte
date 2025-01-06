@@ -20,6 +20,7 @@
     customerData,
   } from "$lib/stores.svelte";
   import type { CartItem } from "$lib/models";
+  import { page } from "$app/state";
   interface Props {
     children?: import("svelte").Snippet;
     data?: LayoutData;
@@ -32,10 +33,17 @@
   // let load = $derived(firstLoad || !$navigating);
 
   const siteData = {
-    description: "",
-    keywords: [],
-    placename: "",
-    region: "",
+    description:
+      "Inversn - Luxury Clothing for the Discerning Shopper in India",
+    keywords: [
+      "luxury clothing",
+      "designer wear",
+      "fashion",
+      "India",
+      "Inversn",
+    ],
+    placename: "India",
+    region: "IN",
   };
 
   injectAnalytics({ mode: dev ? "development" : "production" });
@@ -135,12 +143,12 @@
   <meta name="keywords" content={siteData.keywords.join(", ")} />
   <meta property="og:title" content={PUBLIC_COMPANY_NAME} />
   <meta property="og:description" content={siteData.description} />
-  <meta property="og:image" content="/favicon-96x96.png" />
+  <meta property="og:image" content="/favicon/favicon-96x96.png" />
   <meta property="og:url" content={PUBLIC_DOMAIN} />
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:card" content="/favicon/favicon.svg" />
   <meta name="twitter:title" content={PUBLIC_COMPANY_NAME} />
   <meta name="twitter:description" content={siteData.description} />
-  <meta name="twitter:image" content="/favicon-96x96.png" />
+  <meta name="twitter:image" content="/favicon/favicon-96x96.png" />
 
   <meta name="author" content={PUBLIC_COMPANY_NAME} />
   <meta name="geo.placename" content={siteData.placename} />
@@ -154,13 +162,22 @@
 <Cart />
 
 <!-- {#key load} -->
-<div in:fade={{ duration: 400 }} class="flex h-screen flex-col justify-between">
-  <Header />
-  <main class="mt-24">
-    {@render children?.()}
-  </main>
-  <Footer />
-</div>
+
+{#if page.url.pathname !== "/coming-soon"}
+  <div
+    in:fade={{ duration: 400 }}
+    class="flex h-screen flex-col justify-between"
+  >
+    <Header />
+    <main class="mt-24">
+      {@render children?.()}
+    </main>
+    <Footer />
+  </div>
+{:else}
+  {@render children?.()}
+{/if}
+
 <!-- {/key} -->
 
 {#if scrollY !== 0}

@@ -4,7 +4,6 @@
   import ProductCard from "$lib/components/ProductCard.svelte";
 
   let initScroll = $state(0);
-
   let { data }: { data: LayoutServerData } = $props();
 
   let productImages = $derived(
