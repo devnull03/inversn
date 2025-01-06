@@ -48,16 +48,17 @@
   </div>
 {/snippet}
 
-
-  <video
-    autoplay
-    loop
-    muted
-    playsinline
-    class="w-full h-full object-cover fixed top-0 left-0 z-[-1] opacity-50"
-    src="/coming-soon-video.webm"
-  ></video>
-
+<video
+  autoplay
+  loop
+  muted
+  playsinline
+  poster="/coming-soon/poster.jpg"
+  class="w-full h-full object-cover fixed top-0 left-0 z-[-1] opacity-50"
+>
+  <source src="/coming-soon/bg.webm" type="video/webm" />
+  <source src="/coming-soon/bg.mp4" type="video/mp4" />
+</video>
 
 <main
   class="flex flex-col items-center justify-evenly w-screen h-screen font-[Afacad] bg-primary/45 *:w-4/5 *:md:w-1/4"
