@@ -1,5 +1,8 @@
 on:
-  deployment:
+  [deployment, deployment_status]
+
+jobs:
+  notify:
     steps:
       - name: Notify discord
         uses: th0th/notify-discord@v0.4.1
@@ -8,15 +11,4 @@ on:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_JOB_NAME: "deploy"
-          GITHUB_JOB_STATUS: ${{ job.status }}
-          
-  deployment_status:
-    steps:
-      - name: Notify discord
-        uses: th0th/notify-discord@v0.4.1
-        if: ${{ always() }}
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_JOB_NAME: "deploy status"
           GITHUB_JOB_STATUS: ${{ job.status }}
