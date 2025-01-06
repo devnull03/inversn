@@ -3,6 +3,7 @@ on:
 
 jobs:
   notify:
+    runs-on: ubuntu-latest
     steps:
       - name: Notify discord
         uses: th0th/notify-discord@v0.4.1
