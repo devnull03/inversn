@@ -155,8 +155,6 @@
 
 <Cart />
 
-<!-- {#key load} -->
-
 {#if page.url.pathname !== "/coming-soon"}
   <div
     in:fade={{ duration: 400 }}
@@ -171,8 +169,6 @@
 {:else}
   {@render children?.()}
 {/if}
-
-<!-- {/key} -->
 
 {#if scrollY !== 0}
   <button
