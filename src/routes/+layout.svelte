@@ -86,11 +86,11 @@
         variationId: entry.id,
         item: entryItem,
         quantity: Number.parseInt(
-          data?.orderData.orderObject?.lineItems?.find(
+          data?.orderData?.orderObject?.lineItems?.find(
             (lineItem) => lineItem.catalogObjectId === entry.id
           )?.quantity as string
         ),
-        image: data?.orderData.orderLineItems?.relatedObjects?.find(
+        image: data?.orderData?.orderLineItems?.relatedObjects?.find(
           (img) =>
             img.type === "IMAGE" &&
             entryItem?.itemData?.imageIds?.includes(img.id)
