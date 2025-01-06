@@ -7,6 +7,7 @@
   import { onMount } from "svelte";
   import { gsap } from "gsap";
   import { horizontalLoop } from "$lib/utils";
+  import Logo from "$lib/icons/Logo.svelte";
 
   let { data } = $props();
 
@@ -17,12 +18,17 @@
   const { form: formData, enhance } = form;
 
   onMount(() => {
+    const marqueeSpeed = 1;
+
     const boxes = gsap.utils.toArray(".box"),
-      loop = horizontalLoop(boxes, { repeat: -1 });
+      loop = horizontalLoop(boxes, { repeat: -1, speed: marqueeSpeed });
 
     const invertedBoxes = gsap.utils.toArray(".box-inverted"),
-      invertedLoop = horizontalLoop(invertedBoxes, { repeat: -1, reversed: true });
-
+      invertedLoop = horizontalLoop(invertedBoxes, {
+        repeat: -1,
+        reversed: true,
+        speed: marqueeSpeed,
+      });
   });
 </script>
 
@@ -30,30 +36,70 @@
   <div
     class:top-0={side === "top"}
     class:bottom-0={side === "bottom"}
-    class="absolute text-xl h-10 bg-primary text-white flex items-center gap-1 w-screen overflow-hidden font-[Afacad]"
+    class="absolute text-xl h-10 bg-primary text-white flex items-center gap-1 !w-screen overflow-hidden"
   >
     {#each Array(20) as _, idx}
-      <div class="{className} whitespace-nowrap break-keep w-full even:pl-2 odd:pr-2 font-medium uppercase odd:scale-x-[-1]">DROPPING SOON</div>
+      <div
+        class="{className} whitespace-nowrap break-keep w-full even:pl-2 odd:pr-2 font-medium uppercase odd:scale-x-[-1]"
+      >
+        DROPPING SOON
+      </div>
     {/each}
   </div>
 {/snippet}
 
-<main class="flex flex-col items-center justify-center w-screen h-screen">
-  {@render marquee("box-inverted", "top")}
-  <h1>Coming Soon</h1>
-  <p>This page is under construction.</p>
 
-  <form method="POST" use:enhance class="">
-    <Form.Field {form} name="email">
+  <video
+    autoplay
+    loop
+    muted
+    playsinline
+    class="w-full h-full object-cover fixed top-0 left-0 z-[-1] opacity-50"
+    src="/coming-soon-video.webm"
+  ></video>
+
+
+<main
+  class="flex flex-col items-center justify-evenly w-screen h-screen font-[Afacad] bg-primary/45 *:w-4/5 *:md:w-1/4"
+>
+  <!-- {@render marquee("box-inverted", "top")} -->
+
+  <div class="flex flex-col items-center justify-center gap-4">
+    <Logo class="w-20 h-20 aspect-square" color="white" />
+    <p class="uppercase font-bold text-3xl tracking-[0.27rem] text-white">
+      Inversn
+    </p>
+  </div>
+
+  <div class="flex-col inline-flex font-[Arial] text-white text-lg">
+    in.ver.sion
+    <p class="flex flex-col gap-0 text-xs text-white/60">
+      <span class="font-[Average]">/inˈvərZH(ə)n/</span>
+      <span class="italic">noun</span>
+    </p>
+    the action of converting regular to not regular.
+  </div>
+
+  <form
+    method="POST"
+    use:enhance
+    class="flex items-center justify-between rounded-lg bg-white/80 p-1.5 gap-2"
+  >
+    <Form.Field {form} name="email" class="w-full h-full -space-y-2 relative">
       <Form.Control let:attrs>
-        <Form.Label>email</Form.Label>
-        <Input {...attrs} bind:value={$formData.email} />
+        <input
+          type="text"
+          placeholder="example@email.com"
+          {...attrs}
+          bind:value={$formData.email}
+          class="bg-transparent w-full placeholder:text-primary/40 text-primary h-full outline-none"
+        />
       </Form.Control>
-      <Form.Description>Signup to stay up to date with Inversn</Form.Description
-      >
-      <Form.FieldErrors />
+      <Form.FieldErrors class="absolute bottom-[-90%]" />
     </Form.Field>
-    <Form.Button>Signup</Form.Button>
+    <Form.Button class="uppercase shadow-xl font-bold"
+      >join waitlist</Form.Button
+    >
   </form>
 
   {@render marquee("box", "bottom")}
