@@ -106,11 +106,11 @@
 <svelte:head>
   <title>{PUBLIC_COMPANY_NAME}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-  <!-- <link
-		href="https://fonts.googleapis.com/css2?family=Alatsi&family=Cantarell:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-		rel="stylesheet"
-	/> -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&family=Average&display=swap"
+    rel="stylesheet"
+  />
 
   <script
     src="https://kit.fontawesome.com/30f055fc02.js"
