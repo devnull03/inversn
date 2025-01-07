@@ -35,7 +35,8 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 			orderId: cookies.get('orderId'),
 			orderVersion: cookies.get('orderVersion'),
 			orderObject: initObjects.orderObject,
-			orderLineItems: initObjects.orderLineItems
+			orderLineItems: initObjects.orderLineItems,
+			orderLineItemsRelatedObjects: initObjects.orderLineItemsRelatedObjects
 		},
 		customerData: {
 			customerId: cookies.get('customerId'),

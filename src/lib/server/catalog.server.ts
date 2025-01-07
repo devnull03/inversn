@@ -22,19 +22,29 @@ export const getInitObjects = async (orderId: string | undefined, customerId: st
 		if (categoryResponse.result.errors) throw categoryResponse.result.errors;
 
 		let landingPageCategoryId = categoryResponse.result?.objects?.find(category => category.categoryData?.name === landingPageCategoryName)?.id;
-		let OrderLineItems = orderResponse?.lineItems?.map((lineItem) => lineItem.catalogObjectId as string)
+		let OrderLineItemsIds = orderResponse?.lineItems?.map((lineItem) => lineItem.catalogObjectId as string)
 
 		const [landingPageItemsResponse, OrderLineItemsResponse] = await Promise.all([
 			landingPageCategoryId ? getCategoryItems(landingPageCategoryId) : undefined,
-			orderId && OrderLineItems ? catalogApi.batchRetrieveCatalogObjects({
-				objectIds: OrderLineItems,
+			orderId && OrderLineItemsIds ? catalogApi.batchRetrieveCatalogObjects({
+				objectIds: OrderLineItemsIds,
 				includeRelatedObjects: true,
 			}) : undefined,
 		]);
 
+		let populatedLineItems = orderResponse?.lineItems?.map((lineItem) => {
+			let catalogObject = OrderLineItemsResponse?.result?.objects?.find((object) => object.id === lineItem.catalogObjectId);
+			return {
+				...lineItem,
+				catalogObject,
+			}
+		})
+
 		return {
 			orderObject: orderResponse,
-			orderLineItems: OrderLineItemsResponse?.result,
+			// orderLineItems: OrderLineItemsResponse?.result,
+			orderLineItems: populatedLineItems,
+			orderLineItemsRelatedObjects: OrderLineItemsResponse?.result.relatedObjects,
 			customerObject: customerResponse,
 
 			categories: categoryResponse.result.objects || [],
@@ -77,8 +87,6 @@ export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 export const getItem = async (itemId: string) => {
 	try {
 		const response = await catalogApi.retrieveCatalogObject(itemId, true);
-		// console.log(response.result);
-
 		return response.result;
 
 	} catch (error: any) {
