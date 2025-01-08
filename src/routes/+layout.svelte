@@ -54,7 +54,7 @@
 
     categoriesCache.set(data?.categories || []);
 
-    cartData.set(JSON.parse(localStorage.getItem("cartData") || "{}"));
+    // cartData.set(JSON.parse(localStorage.getItem("cartData") || "{}"));
     cartData.subscribe((value) => {
       localStorage.removeItem("cartData");
       localStorage.setItem("cartData", JSON.stringify(value));
@@ -73,22 +73,7 @@
       return v;
     });
 
-    cartItems.update((v) => {
-      v = [];
-      for (let entry of data?.orderData?.orderLineItems || []) {
-        let cartItem: CartItem = {
-          ...entry,
-          image: data?.orderData?.orderLineItemsRelatedObjects?.find(
-            (img) =>
-              img.type === "IMAGE" &&
-              entry.catalogObject?.itemData?.imageIds?.includes(img.id)
-          ),
-        };
-        v.push(cartItem);
-      }
-
-      return v;
-    });
+    cartItems.set(data?.orderData?.orderLineItems || []);
   });
 </script>
 

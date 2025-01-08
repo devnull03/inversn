@@ -25,7 +25,7 @@ export const populateLineItems = async (lineItems: OrderLineItem[]) => {
 
 		let populatedLineItems = lineItems?.map((lineItem) => {
 			let catalogObject = OrderLineItemsResponse?.result?.objects?.find((object) => object.id === lineItem.catalogObjectId);
-			let images = OrderLineItemsResponse?.result?.relatedObjects?.find((object) => catalogObject?.itemData?.imageIds?.includes(object.id));
+			let images = OrderLineItemsResponse?.result?.relatedObjects?.find((object) => catalogObject?.itemVariationData?.imageIds?.includes(object.id));
 			return {
 				...lineItem,
 				catalogObject,
