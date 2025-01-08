@@ -5,7 +5,7 @@
   import * as Tooltip from "$lib/components/ui/tooltip";
   import { cartData, cartItems, cartOpen } from "$lib/stores.svelte";
   import { formatPrice } from "$lib/utils";
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import type { ActionData, PageServerData } from "./$types";
   import type { CatalogObject } from "square";
   import Reload from "svelte-radix/Reload.svelte";
@@ -24,32 +24,38 @@
   let selectedVariation = $state<CatalogObject | undefined>();
   // let selectedVariationId = $derived(selectedVariation?.id);
   let itemInCart = $derived(
-    $cartItems.find((item) => item.variationId === selectedVariation?.id)
+    $cartItems.find((item) => item.catalogObjectId === selectedVariation?.id)
   );
 
   let formLoading = $state(false);
 
-  $inspect(data);
+  $inspect(data, $cartItems);
 
   $effect(() => {
-    console.log(form);
     if (form) {
       cartData.update((val) => {
         val.orderId = form.orderId;
-        val.orderVersion = form.orderVersion;
+        val.orderVersion =
+          typeof form.orderVersion === "string"
+            ? parseInt(form.orderVersion)
+            : form.orderVersion;
         val.orderObject = form.order;
         return val;
       });
 
       cartItems.update((val) => {
         val.push({
-          item: data.product,
-          variation: selectedVariation,
-          variationId: form.variationId,
-          quantity: 1,
+          ...form?.lineItem,
+          catalogObject: data?.product,
           image: itemImages[0],
+          quantity: form?.lineItem?.quantity as string,
         });
         return val;
+      });
+
+      untrack(() => {
+        formLoading = false;
+        $cartOpen = true;
       });
     }
   });
@@ -63,15 +69,11 @@
       formLoading = true;
       return async ({ update }) => {
         update();
-        $cartOpen = true;
-        formLoading = false;
       };
     }}
     method="POST"
   >
     <input type="hidden" name="variationId" value={selectedVariation?.id} />
-    <input type="hidden" name="orderId" value={$cartData?.orderId} />
-    <input type="hidden" name="orderVersion" value={$cartData?.orderVersion} />
     {#if buyNow}
       <input type="hidden" name="buyNow" value="true" />
     {/if}

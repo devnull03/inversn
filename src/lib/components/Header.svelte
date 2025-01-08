@@ -70,15 +70,13 @@
         class="absolute top-24 z-[999] -mx-[6%] flex w-screen flex-col items-center justify-evenly gap-8 border-b border-black py-4 md:relative md:top-0 md:mx-0 md:w-auto md:flex-row md:border-transparent md:bg-transparent md:py-0"
       >
         <!-- nav buttons -->
+        <button class="fa-solid fa-user text-xl" aria-label="login"></button>
+
         <button
           onclick={() => ($cartOpen = !$cartOpen)}
           class="fa-solid fa-cart-shopping text-xl"
           aria-label="Toggle cart"
         ></button>
-
-        <button class="fa-solid fa-user text-xl" aria-label="login"
-        ></button>
-
       </div>
     {/if}
   </div>

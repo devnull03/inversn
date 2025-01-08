@@ -1,6 +1,6 @@
 import { catalogApi } from "./clients.server";
 import type { SearchCatalogObjectsRequest } from "square";
-import { getOrder } from "./orders.server";
+import { getOrder, populateLineItems } from "./orders.server";
 import { getCustomer } from "./customer.server";
 
 const FETCH_LIMIT = 100;
@@ -22,19 +22,16 @@ export const getInitObjects = async (orderId: string | undefined, customerId: st
 		if (categoryResponse.result.errors) throw categoryResponse.result.errors;
 
 		let landingPageCategoryId = categoryResponse.result?.objects?.find(category => category.categoryData?.name === landingPageCategoryName)?.id;
-		let OrderLineItems = orderResponse?.lineItems?.map((lineItem) => lineItem.catalogObjectId as string)
 
-		const [landingPageItemsResponse, OrderLineItemsResponse] = await Promise.all([
+		const [landingPageItemsResponse, popluateResponse] = await Promise.all([
 			landingPageCategoryId ? getCategoryItems(landingPageCategoryId) : undefined,
-			orderId && OrderLineItems ? catalogApi.batchRetrieveCatalogObjects({
-				objectIds: OrderLineItems,
-				includeRelatedObjects: true,
-			}) : undefined,
+			orderResponse?.lineItems?.length ? populateLineItems(orderResponse?.lineItems || []) : undefined,
 		]);
 
 		return {
 			orderObject: orderResponse,
-			orderLineItems: OrderLineItemsResponse?.result,
+			orderLineItems: popluateResponse?.populatedLineItems,
+			orderLineItemsRelatedObjects: popluateResponse?.relatedObjects,
 			customerObject: customerResponse,
 
 			categories: categoryResponse.result.objects || [],
@@ -77,8 +74,6 @@ export const getCategoryItems = async (categoryId: string, cursor?: string) => {
 export const getItem = async (itemId: string) => {
 	try {
 		const response = await catalogApi.retrieveCatalogObject(itemId, true);
-		// console.log(response.result);
-
 		return response.result;
 
 	} catch (error: any) {

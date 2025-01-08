@@ -1,10 +1,16 @@
-import type { CatalogItemVariation, CatalogObject } from "square";
+import type { CatalogItemVariation, CatalogObject, OrderLineItem } from "square";
 
 
-export type CartItem = {
-	item?: CatalogObject;
+// export type CartItem = {
+// 	uid?: string;
+// 	item?: CatalogObject;
+// 	image?: CatalogObject;
+// 	variation?: CatalogObject;
+// 	variationId: string;
+// 	quantity?: number;
+// }
+
+export type CartItem = OrderLineItem & {
+	catalogObject?: CatalogObject;
 	image?: CatalogObject;
-	variation?: CatalogObject;
-	variationId: string;
-	quantity?: number;
-}
+} 

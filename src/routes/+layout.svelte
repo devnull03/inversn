@@ -29,7 +29,6 @@
   let firstLoad = $state(true);
   // let load = $derived(firstLoad || !$navigating);
 
-  
   const siteData = {
     description:
       "Inversn - Luxury Clothing for the Discerning Shopper in India",
@@ -44,6 +43,8 @@
     region: "IN",
   };
 
+  $inspect($cartData, $cartItems);
+
   onMount(async () => {
     firstLoad = false;
 
@@ -53,11 +54,9 @@
 
     categoriesCache.set(data?.categories || []);
 
-    cartData.set(JSON.parse(localStorage.getItem("cartData") || "{}"));
+    // cartData.set(JSON.parse(localStorage.getItem("cartData") || "{}"));
     cartData.subscribe((value) => {
       localStorage.removeItem("cartData");
-      console.log(value);
-
       localStorage.setItem("cartData", JSON.stringify(value));
     });
 
@@ -74,40 +73,18 @@
       return v;
     });
 
-    let __cartItems: CartItem[] = [];
-
-    for (let entry of data?.orderData?.orderLineItems?.objects || []) {
-      let entryItem = data?.orderData?.orderLineItems?.relatedObjects?.find(
-        (item) => item.id === entry.itemVariationData?.itemId
-      );
-
-      let cartItem: CartItem = {
-        variation: entry,
-        variationId: entry.id,
-        item: entryItem,
-        quantity: Number.parseInt(
-          data?.orderData?.orderObject?.lineItems?.find(
-            (lineItem) => lineItem.catalogObjectId === entry.id
-          )?.quantity as string
-        ),
-        image: data?.orderData?.orderLineItems?.relatedObjects?.find(
-          (img) =>
-            img.type === "IMAGE" &&
-            entryItem?.itemData?.imageIds?.includes(img.id)
-        ),
-      };
-
-      __cartItems.push(cartItem);
-    }
-
-    cartItems.set(__cartItems);
+    cartItems.set(data?.orderData?.orderLineItems || []);
   });
 </script>
 
 <svelte:head>
   <title>{PUBLIC_COMPANY_NAME}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin="anonymous"
+  />
   <link
     href="https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&family=Average&display=swap"
     rel="stylesheet"
