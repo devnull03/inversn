@@ -74,19 +74,18 @@ export const actions: Actions = {
 		const data = await request.formData()
 		const lineItemUid = data.get('lineItemUid') as string;
 		const quantity = data.get('quantity') as string;
-		// const variationId = data.get('variationId') as string;
+		const actionType = data.get('type') as string;
 
 		const orderId = cookies.get('orderId');
 		const orderVersion = cookies.get('orderVersion');
 
-		console.log("updating quantity of", lineItemUid, "to", quantity);
-		
+		console.log(actionType, " of", lineItemUid, "to", quantity);
 
 		if (!orderId) return fail(400, { orderId, missing: true });
 		if (!orderVersion) return fail(400, { orderVersion, missing: true });;
 		if (!lineItemUid) return fail(400, { lineItemUid, missing: true });;
-		if (!quantity) return fail(400, { quantity, missing: true });;
-		// if (!variationId) return fail(400, { variationId, missing: true });
+		if (!actionType) return fail(400, { actionType, missing: true });;
+		if (!quantity && actionType === "update") return fail(400, { quantity, missing: true });;
 
 		let parsedOrderVersion: number;
 		try {
@@ -94,7 +93,13 @@ export const actions: Actions = {
 		} catch (e) {
 			return fail(400, { orderVersion, invalid: true });
 		}
-		const res = await updateCartItemQuantity(orderId, parsedOrderVersion, lineItemUid, Number.parseInt(quantity));
+		let res
+		if (actionType === "delete") {
+			res = await deleteFromCart(orderId, parsedOrderVersion, lineItemUid);
+		} else {
+
+			res = await updateCartItemQuantity(orderId, parsedOrderVersion, lineItemUid, Number.parseInt(quantity));
+		}
 
 		if (res?.orderId)
 			cookies.set('orderId', res.orderId, { path: '/' });

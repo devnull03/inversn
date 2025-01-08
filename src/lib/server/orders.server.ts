@@ -1,11 +1,10 @@
 import { MODE, PROD_LOCATION_ID, SANDBOX_LOCATION_ID } from "$env/static/private";
-import { ordersApi } from "$lib/server/clients.server";
+import { catalogApi, ordersApi } from "$lib/server/clients.server";
 import type { CartItem } from "$lib/models";
 import type { OrderLineItem } from "square";
 
 
 export const getOrder = async (orderId: string) => {
-
 	try {
 		const response = await ordersApi.retrieveOrder(orderId);
 		return response.result.order;
@@ -13,7 +12,36 @@ export const getOrder = async (orderId: string) => {
 		console.log(error);
 		return undefined;
 	}
+}
 
+export const populateLineItems = async (lineItems: OrderLineItem[]) => {
+	try {
+		let OrderLineItemsIds = lineItems?.map((lineItem) => lineItem.catalogObjectId as string)
+
+		const OrderLineItemsResponse = await catalogApi.batchRetrieveCatalogObjects({
+			objectIds: OrderLineItemsIds,
+			includeRelatedObjects: true,
+		})
+
+		let populatedLineItems = lineItems?.map((lineItem) => {
+			let catalogObject = OrderLineItemsResponse?.result?.objects?.find((object) => object.id === lineItem.catalogObjectId);
+			let images = OrderLineItemsResponse?.result?.relatedObjects?.find((object) => catalogObject?.itemData?.imageIds?.includes(object.id));
+			return {
+				...lineItem,
+				catalogObject,
+				images,
+			}
+		})
+
+		return {
+			populatedLineItems,
+			relatedObjects: OrderLineItemsResponse?.result.relatedObjects,
+		};
+
+	} catch (error) {
+		console.log(error);
+		return undefined;
+	}
 }
 
 const buildLineItems = (items: { variationId: string, quantity: number }[]): OrderLineItem[] => {

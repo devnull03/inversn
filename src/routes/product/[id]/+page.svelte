@@ -5,7 +5,7 @@
   import * as Tooltip from "$lib/components/ui/tooltip";
   import { cartData, cartItems, cartOpen } from "$lib/stores.svelte";
   import { formatPrice } from "$lib/utils";
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import type { ActionData, PageServerData } from "./$types";
   import type { CatalogObject } from "square";
   import Reload from "svelte-radix/Reload.svelte";
@@ -52,6 +52,11 @@
         });
         return val;
       });
+
+      untrack(() => {
+        formLoading = false;
+        $cartOpen = true;
+      });
     }
   });
 
@@ -64,8 +69,6 @@
       formLoading = true;
       return async ({ update }) => {
         update();
-        $cartOpen = true;
-        formLoading = false;
       };
     }}
     method="POST"

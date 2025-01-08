@@ -11,16 +11,20 @@
   import type { ActionResult } from "@sveltejs/kit";
 
   let checkoutLoading = $state(false);
+  let cartUpdateLoading = $state(false);
 
   let actionVariationId = $state<string>();
   let actionQuantity = $state<number>();
   let actionLineItemUid = $state<string>();
+  let actionIdx = $state<number>();
+  let actionType = $state<"update" | "delete">();
 
   async function handleSubmit(
     event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }
   ) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    cartUpdateLoading = true;
 
     const response = await fetch(event.currentTarget.action, {
       method: "POST",
@@ -30,12 +34,28 @@
     const result: ActionResult = deserialize(await response.text());
 
     if (result.type === "success") {
-      // rerun all `load` functions, following the successful update
       await invalidateAll();
+
+      if (actionType === "update" && actionIdx !== undefined) {
+        $cartItems[actionIdx].quantity = actionQuantity?.toString() as string;
+      } else if (actionType === "delete") {
+        cartItems.update((val) => {
+          actionIdx !== undefined && val.splice(actionIdx, 1);
+          return val;
+        });
+      }
     }
 
-    console.log("cart drawer action:", result); 
-    applyAction(result);
+    actionVariationId = undefined;
+    actionQuantity = undefined;
+    actionLineItemUid = undefined;
+    actionIdx = undefined;
+    actionType = undefined;
+
+    cartUpdateLoading = false;
+
+    console.log("cart drawer action:", result);
+    // applyAction(result);
   }
 </script>
 
@@ -53,6 +73,7 @@
         <ScrollArea class="w-full h-full">
           <form
             class="flex flex-col gap-4"
+            action="/cart?/update"
             method="POST"
             onsubmit={handleSubmit}
           >
@@ -67,16 +88,20 @@
               name="lineItemUid"
               bind:value={actionLineItemUid}
             />
+            <input type="hidden" name="type" bind:value={actionType} />
+            <input type="hidden" name="idx" bind:value={actionIdx} />
 
-            {#each $cartItems as item}
+            {#each $cartItems as item, idx (item.uid)}
               <div
                 class="flex flex-col gap-4 border-b border-black last:border-none p-4"
               >
                 <h6 class="text-2xl">{item.name}</h6>
                 <p>
-                  {formatPrice(
-                    item?.basePriceMoney?.amount
-                  )}
+                  {#if cartUpdateLoading && actionIdx === idx}
+                    <Reload class="h-4 w-4 animate-spin" />
+                  {:else}
+                    {formatPrice(item.totalMoney?.amount)}
+                  {/if}
                 </p>
                 <p class="text-sm">
                   {item.uid} <br />
@@ -84,36 +109,56 @@
                   {item.variationName}
                 </p>
 
-                {#if item.quantity}
-                  {@const actionUrl = `/cart/?/update`}
-                  <div class="flex gap-4 rounded border border-black p-2">
-                    <button
-                      type="submit"
-                      formaction={actionUrl}
-                      onclick={() => {
-                        if (!item.quantity) return;
-                        actionLineItemUid = item.uid as string | undefined;
-                        actionQuantity = Number(item.quantity) - 1;
-                        actionVariationId = item.catalogObjectId as string | undefined;
-                      }}
-                      class="">-</button
-                    >
-                    {#key item.quantity}
-                      <span in:slide>{item.quantity}</span>
-                    {/key}
-                    <button
-                      type="submit"
-                      formaction={actionUrl}
-                      onclick={() => {
-                        if (!item.quantity) return;
-                        actionLineItemUid = item.uid as string | undefined;
-                        actionQuantity = Number(item.quantity) + 1;
-                        actionVariationId = item.catalogObjectId as string | undefined;
-                      }}
-                      class="">+</button
-                    >
-                  </div>
-                {/if}
+                <div class="flex gap-4 items-center">
+                  {#if item.quantity}
+                    <div class="flex gap-4 rounded border border-black p-2">
+                      <button
+                        type="submit"
+                        onclick={() => {
+                          if (!item.quantity) return;
+                          actionLineItemUid = item.uid as string | undefined;
+                          actionQuantity = Number(item.quantity) - 1;
+                          actionVariationId = item.catalogObjectId as
+                            | string
+                            | undefined;
+                          actionIdx = idx;
+                          actionType = "update";
+                        }}
+                        class="">-</button
+                      >
+                      {#key item.quantity}
+                        <span in:slide>{item.quantity}</span>
+                      {/key}
+                      <button
+                        type="submit"
+                        onclick={() => {
+                          if (!item.quantity) return;
+                          actionLineItemUid = item.uid as string | undefined;
+                          actionQuantity = Number(item.quantity) + 1;
+                          actionVariationId = item.catalogObjectId as
+                            | string
+                            | undefined;
+                          actionIdx = idx;
+                          actionType = "update";
+                        }}
+                        class="">+</button
+                      >
+                    </div>
+                  {/if}
+                  <button
+                    type="submit"
+                    class="fa-solid fa-trash hover:text-red-400 transition-colors duration-200 ease-in-out"
+                    aria-label="Delete item"
+                    onclick={() => {
+                      actionLineItemUid = item.uid as string | undefined;
+                      actionVariationId = item.catalogObjectId as
+                        | string
+                        | undefined;
+                      actionIdx = idx;
+                      actionType = "delete";
+                    }}
+                  ></button>
+                </div>
               </div>
             {/each}
           </form>
