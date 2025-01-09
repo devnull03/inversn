@@ -8,11 +8,24 @@
   import { gsap } from "gsap";
   import { horizontalLoop } from "$lib/utils";
   import Logo from "$lib/icons/Logo.svelte";
+  import { toast } from "svelte-sonner";
+  import { Reload } from "svelte-radix";
 
   let { data } = $props();
+  let submitLoading = $state(false);
 
   const form = superForm(data.form, {
     validators: zodClient(formSchema),
+    onUpdated: ({ form: f }) => {
+      if (f.valid) {
+        toast.success(`Thank you for joining the waitlist!`, {
+          duration: 5000,
+        });
+      } else {
+        toast.error("Please fix the errors in the form.");
+      }
+      submitLoading = false;
+    },
   });
 
   const { form: formData, enhance } = form;
@@ -98,9 +111,15 @@
       </Form.Control>
       <Form.FieldErrors class="absolute bottom-[-90%]" />
     </Form.Field>
-    <Form.Button class="uppercase shadow-xl font-bold"
-      >join waitlist</Form.Button
+    <Form.Button
+      onclick={() => (submitLoading = true)}
+      class="uppercase shadow-xl font-bold"
     >
+      {#if submitLoading}
+        <Reload class="w-4 h-4 animate-spin" />
+      {/if}
+      join waitlist
+    </Form.Button>
   </form>
 
   {@render marquee("box", "bottom")}
