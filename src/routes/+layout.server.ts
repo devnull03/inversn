@@ -17,7 +17,7 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const orderId = cookies.get('orderId');
 	const customerId = cookies.get('customerId');
 
-	const initObjects = await getInitObjects(orderId, customerId);
+	const initObjects: any = await getInitObjects(orderId, customerId);
 
 	if (initObjects.error) {
 		console.error(initObjects.error);

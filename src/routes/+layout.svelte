@@ -115,12 +115,15 @@
   <meta name="keywords" content={siteData.keywords.join(", ")} />
   <meta property="og:title" content={PUBLIC_COMPANY_NAME} />
   <meta property="og:description" content={siteData.description} />
-  <meta property="og:image" content="/favicon/favicon-96x96.png" />
+  <meta property="og:image" itemprop="image" content="/favicon/web-app-manifest-512x512.png" />
   <meta property="og:url" content={PUBLIC_DOMAIN} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={PUBLIC_COMPANY_NAME} />
+
   <meta name="twitter:card" content="/favicon/favicon.svg" />
   <meta name="twitter:title" content={PUBLIC_COMPANY_NAME} />
   <meta name="twitter:description" content={siteData.description} />
-  <meta name="twitter:image" content="/favicon/favicon-96x96.png" />
+  <meta name="twitter:image" content="/favicon/web-app-manifest-512x512.png" />
 
   <meta name="author" content={PUBLIC_COMPANY_NAME} />
   <meta name="geo.placename" content={siteData.placename} />
