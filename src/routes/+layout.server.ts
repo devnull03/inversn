@@ -8,7 +8,7 @@ import { dev } from '$app/environment';
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 
 	//? COMING SOON
-	if (MODE === 'prod' && !dev) {
+	if (MODE === 'prod') {
 		if (url.pathname !== '/coming-soon')
 			redirect(307, '/coming-soon');
 		return {}
