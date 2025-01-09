@@ -1,7 +1,8 @@
-import { MODE, PROD_LOCATION_ID, SANDBOX_LOCATION_ID } from "$env/static/private";
+import { CATALOG_MODE, PROD_LOCATION_ID, SANDBOX_LOCATION_ID } from "$env/static/private";
 import { catalogApi, ordersApi } from "$lib/server/clients.server";
 import type { CartItem } from "$lib/models";
-import type { OrderLineItem } from "square";
+import type { Customer, OrderLineItem } from "square";
+import type { FormData } from "$lib/components/form";
 
 
 export const getOrder = async (orderId: string) => {
@@ -63,7 +64,7 @@ export const createCart = async (initCartItems: { variationId: string, quantity:
 		const lineItems = buildLineItems(initCartItems);
 		const response = await ordersApi.createOrder({
 			order: {
-				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
+				locationId: CATALOG_MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
 				state: 'DRAFT',
 				source: {
 					name: 'web',
@@ -90,7 +91,7 @@ export const addToCart = async (orderId: string, orderVersion: number, newCartIt
 		const lineItems = buildLineItems(newCartItems);
 		const response = await ordersApi.updateOrder(orderId, {
 			order: {
-				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
+				locationId: CATALOG_MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
 				lineItems,
 				version: orderVersion,
 			},
@@ -113,7 +114,7 @@ export const deleteFromCart = async (orderId: string, orderVersion: number, cart
 		const idempotencyKey = crypto.randomUUID()
 		const response = await ordersApi.updateOrder(orderId, {
 			order: {
-				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
+				locationId: CATALOG_MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
 				version: orderVersion,
 			},
 			fieldsToClear: [`line_items[${cartItemUid}]`],
@@ -135,7 +136,7 @@ export const updateCartItemQuantity = async (orderId: string, orderVersion: numb
 		const idempotencyKey = crypto.randomUUID()
 		const response = await ordersApi.updateOrder(orderId, {
 			order: {
-				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
+				locationId: CATALOG_MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
 				version: orderVersion,
 				lineItems: [{
 					uid: cartItemUid,
@@ -155,14 +156,15 @@ export const updateCartItemQuantity = async (orderId: string, orderVersion: numb
 	}
 }
 
-export const createSquareOrder = async (orderId: string, orderVersion: number) => {
+export const createSquareOrder = async (orderDetails: { orderId: string, orderVersion: number }, customer: Customer, formData: FormData) => {
 	try {
 		const idempotencyKey = crypto.randomUUID()
-		const response = await ordersApi.updateOrder(orderId, {
+		const response = await ordersApi.updateOrder(orderDetails.orderId, {
 			order: {
-				locationId: MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
-				version: orderVersion,
+				locationId: CATALOG_MODE === 'prod' ? PROD_LOCATION_ID : SANDBOX_LOCATION_ID,
+				version: orderDetails.orderVersion,
 				state: 'OPEN',
+				customerId: customer.id,
 			},
 			idempotencyKey
 		});
