@@ -1,5 +1,5 @@
 import { MODE, PROD_PAYU_KEY, PROD_PAYU_SALT, SANDBOX_PAYU_KEY, SANDBOX_PAYU_SALT } from '$env/static/private';
-import axios from 'axios';
+import axios, { toFormData } from 'axios';
 import { paymentsApi } from '$lib/server/clients.server';
 import { createHash } from 'crypto';
 import type { Order } from 'square';
@@ -173,7 +173,7 @@ export const createSquarePayment = async (order: Order, paymentType: "PayU" | "C
 	}
 }
 
-export const initiatePayment = async (order: Order, formData: FormData, originUrl: string) => {
+export const buildPaymentRequest = (order: Order, formData: FormData, originUrl: string) => {
 	try {
 		let rawData = {
 			txnid: crypto.randomUUID(), // TODO
@@ -218,30 +218,44 @@ export const initiatePayment = async (order: Order, formData: FormData, originUr
 		const options = {
 			method: 'POST',
 			url,
-			headers: { accept: 'text/plain', 'content-type': 'application/x-www-form-urlencoded' },
+			headers: { 
+				accept: 'text/json', 
+				'content-type': 'application/x-www-form-urlencoded',
+			},
 			data: encodedParams
 		};
 
-		const response = await axios.request(options);
-		const parsedResponse = new URLSearchParams(response.data);
-
-		const reverseHash = parsedResponse.get('hash');
-		const txnStatus = parsedResponse.get('status');
-
-		if (txnStatus !== 'success') throw new Error('Transaction failed');
-		if (!reverseHash || !txnStatus) throw new Error('Invalid response');
-		const isValidHash = validateHash(reverseHash, {
-			...creds,
-			...rawData,
-			status: txnStatus,
-		})
-
-		if (!isValidHash) throw new Error('Invalid hash');
+		// const response = await axios.request(options);
+		return { options, rawData };
 
 	} catch (error) {
 		console.error(error);
-		return { error };
+		return { error: error instanceof Error ? error.message : "Unknown error" };
 	}
+}
+
+export const verifyPaymentResponse = (response: any, rawData: any) => {
+	const creds = {
+		key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY,
+		salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT,
+	}
+
+	const parsedResponse = new URLSearchParams(response.data);
+
+	const reverseHash = parsedResponse.get('hash');
+	const txnStatus = parsedResponse.get('status');
+
+	if (txnStatus !== 'success') return { error: "Transaction failed" };
+	if (!reverseHash || !txnStatus) return { error: "Invalid response" };
+	const isValidHash = validateHash(reverseHash, {
+		...creds,
+		...rawData,
+		status: txnStatus,
+	})
+
+	if (!isValidHash) return { error: "Invalid hash" };
+
+	return { status: txnStatus, ...parsedResponse }
 }
 
 export const verifyPayment = async (paymentData: any) => {

@@ -32,7 +32,8 @@
   $inspect(data, $cartItems);
 
   $effect(() => {
-    if (form) {
+    if (form && form.from !== "cart") {
+
       cartData.update((val) => {
         val.orderId = form.orderId;
         val.orderVersion =

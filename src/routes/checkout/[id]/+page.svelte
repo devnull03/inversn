@@ -14,7 +14,9 @@
     IndianStates,
   } from "$lib/components/form";
   import { toast } from "svelte-sonner";
-  let { data } = $props();
+  import axios, { toFormData } from "axios";
+
+  let { data, form: rawFormResponse } = $props();
 
   const form = superForm(data.form, {
     validators: zodClient(formSchema),
@@ -23,6 +25,14 @@
         toast.success(`form processed`, {
           duration: 5000,
         });
+
+        console.log("payment data", rawFormResponse?.paymentReqOptions); 
+
+        if (rawFormResponse?.paymentReqOptions)
+          axios.request({
+            ...rawFormResponse?.paymentReqOptions,
+            data: toFormData(new URLSearchParams(rawFormResponse.paymentReqOptions.data)),
+          });
       } else {
         toast.error("Please fix the errors in the form.");
       }
@@ -32,6 +42,11 @@
     },
     onSubmit: async (event) => {
       console.log("Submitting form", event);
+    },
+    onError(event) {
+      toast.error(
+        `(${event.result.status}: ${event.result.type}) ${event.result.error.message}`
+      );
     },
   });
 
@@ -243,7 +258,6 @@
   </section>
 
   <section class="w-[44%] pl-4">
-
     <FormInput
       bind:formDataField={$formData.discountCode}
       {form}

@@ -6,7 +6,7 @@ import { fail } from "@sveltejs/kit";
 import { createCustomer, getCustomer } from "$lib/server/customer.server";
 import { createSquareOrder } from "$lib/server/orders.server";
 import type { Customer, Order } from "square";
-import { initiatePayment } from "$lib/server/payment.server";
+import { buildPaymentRequest } from "$lib/server/payment.server";
 
 
 
@@ -53,6 +53,7 @@ export const actions: Actions = {
 			return fail(500, {
 				form, message: "error creating customer", error: customer.error
 			});
+
 		}
 		customer?.customerId && event.cookies.set("customerId", customer.customerId, { path: "/" });
 
@@ -60,11 +61,14 @@ export const actions: Actions = {
 
 		// change order state to OPEN
 		const openOrder = await createSquareOrder(orderDetails, customer.customer as Customer, form.data);
+		if (openOrder) {
+			event.cookies.set("orderId", openOrder.order?.id as string, { path: "/" });
+			event.cookies.set("orderVersion", openOrder.order?.version?.toString() as string, { path: "/" });
+		}
 		console.log("Created Order");
 
-		// initiate PayU payment
-		const payment = await initiatePayment(openOrder?.order as Order, form.data, event.url.origin);
-		console.log("Initiated Payment");
+		// build PayU payment request to send to client
+		const { options: paymentReqOptions, rawData: paymentData } = buildPaymentRequest(openOrder?.order as Order, form.data, event.url.origin);
 
 		// SUCCESS
 		// create a external payment in square
@@ -73,10 +77,14 @@ export const actions: Actions = {
 		// FAIL
 		// prompt to try again
 
-
-
 		return {
 			form,
+			customer,
+			order: openOrder,
+			paymentReqOptions: {
+				...paymentReqOptions,
+				data: paymentReqOptions?.data.toString(),
+			},
 		};
 	},
 };
