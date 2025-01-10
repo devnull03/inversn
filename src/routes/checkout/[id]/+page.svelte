@@ -1,9 +1,5 @@
 <script lang="ts">
-  import SuperDebug, {
-    superForm,
-    type Infer,
-    type SuperValidated,
-  } from "sveltekit-superforms";
+  import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as Form from "$lib/components/ui/form";
   import {
@@ -14,9 +10,9 @@
     IndianStates,
   } from "$lib/components/form";
   import { toast } from "svelte-sonner";
-  import axios, { toFormData } from "axios";
 
   let { data, form: rawFormResponse } = $props();
+  let formLoading = $state(false);
 
   const form = superForm(data.form, {
     validators: zodClient(formSchema),
@@ -26,24 +22,21 @@
           duration: 5000,
         });
 
-        console.log("payment data", rawFormResponse?.paymentReqOptions); 
+        console.log("payment data", rawFormResponse);
 
-        if (rawFormResponse?.paymentReqOptions)
-          axios.request({
-            ...rawFormResponse?.paymentReqOptions,
-            data: toFormData(new URLSearchParams(rawFormResponse.paymentReqOptions.data)),
-          });
+        formLoading = false;
+        window.location.href = rawFormResponse?.redirectUrl;
+
       } else {
         toast.error("Please fix the errors in the form.");
       }
     },
-    onUpdate(event) {
-      console.log("Form updated", event);
-    },
     onSubmit: async (event) => {
       console.log("Submitting form", event);
+      formLoading = true;
     },
     onError(event) {
+      formLoading = false;
       toast.error(
         `(${event.result.status}: ${event.result.type}) ${event.result.error.message}`
       );
@@ -52,7 +45,7 @@
 
   const { form: formData, enhance, allErrors } = form;
 
-  $inspect($allErrors);
+  // $inspect($allErrors);
 </script>
 
 <form method="POST" use:enhance class="w-full *:p-16 flex">

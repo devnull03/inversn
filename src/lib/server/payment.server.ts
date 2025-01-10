@@ -177,7 +177,7 @@ export const buildPaymentRequest = (order: Order, formData: FormData, originUrl:
 	try {
 		let rawData = {
 			txnid: crypto.randomUUID(), // TODO
-			amount: order.netAmountDueMoney?.amount?.toString() as string,
+			amount: (Number(order.netAmountDueMoney?.amount) / 100).toString(),
 			productinfo: order.lineItems?.map(item => item.name).join(', ') as string,
 			firstname: formData.firstName as string,
 			lastname: formData.lastName as string,
@@ -218,16 +218,17 @@ export const buildPaymentRequest = (order: Order, formData: FormData, originUrl:
 		const options = {
 			method: 'POST',
 			url,
-			headers: { 
-				accept: 'text/json', 
+			headers: {
+				accept: 'text/json',
 				'content-type': 'application/x-www-form-urlencoded',
+				'mode': 'no-cors',
 			},
-			data: encodedParams
+			data: encodedParams,
+			redirect: 'manual'
 		};
 
 		// const response = await axios.request(options);
 		return { options, rawData };
-
 	} catch (error) {
 		console.error(error);
 		return { error: error instanceof Error ? error.message : "Unknown error" };

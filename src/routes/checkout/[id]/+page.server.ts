@@ -7,6 +7,7 @@ import { createCustomer, getCustomer } from "$lib/server/customer.server";
 import { createSquareOrder } from "$lib/server/orders.server";
 import type { Customer, Order } from "square";
 import { buildPaymentRequest } from "$lib/server/payment.server";
+import axios from "axios";
 
 
 
@@ -49,11 +50,13 @@ export const actions: Actions = {
 			customer = await getCustomer(event.cookies.get("customerId") as string);
 		else customer = await createCustomer(form.data);
 
+		console.log("Customer", customer);
+		
+
 		if (customer.error) {
 			return fail(500, {
 				form, message: "error creating customer", error: customer.error
 			});
-
 		}
 		customer?.customerId && event.cookies.set("customerId", customer.customerId, { path: "/" });
 
@@ -68,8 +71,19 @@ export const actions: Actions = {
 		console.log("Created Order");
 
 		// build PayU payment request to send to client
-		const { options: paymentReqOptions, rawData: paymentData } = buildPaymentRequest(openOrder?.order as Order, form.data, event.url.origin);
+		const { options: paymentReqOptions, rawData: paymentData, error: paymentError } = buildPaymentRequest(openOrder?.order as Order, form.data, event.url.origin);
 
+		if (paymentError || !paymentReqOptions) {
+			return fail(500, {
+				form, message: "error building payment request", error: paymentError
+			});
+		}
+
+		const paymentRes = await axios.request(paymentReqOptions)
+
+		console.log("payment status:", paymentRes.request.responseUrl);
+
+	
 		// SUCCESS
 		// create a external payment in square
 		// do delhivery stuff.... i need to check exactly how
@@ -81,10 +95,15 @@ export const actions: Actions = {
 			form,
 			customer,
 			order: openOrder,
-			paymentReqOptions: {
-				...paymentReqOptions,
-				data: paymentReqOptions?.data.toString(),
-			},
+			redirectUrl: paymentRes.request.responseUrl,
+
+			// paymentReqOptions: {
+			// 	...paymentReqOptions,
+			// 	data: paymentReqOptions?.data.toString(),
+			// 	paymentResData: paymentRes.data,
+			// 	// @ts-ignore
+			// 	pyamentResHeaders: paymentRes.headers.toJSON(),
+			// },
 		};
 	},
 };

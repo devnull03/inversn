@@ -17,12 +17,18 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const orderId = cookies.get('orderId');
 	const customerId = cookies.get('customerId');
 
+	console.log(orderId, customerId);
+	
+
 	const initObjects: any = await getInitObjects(orderId, customerId);
 
 	if (initObjects.error) {
 		console.error(initObjects.error);
 		error(500, 'Internal Server Error');
 	}
+
+	console.log(initObjects.customerObject);
+	
 
 	cookies.set('customerId', initObjects.customerObject?.id || '', { path: '/' });
 	cookies.set('orderId', initObjects.orderObject?.id || '', { path: '/' });
