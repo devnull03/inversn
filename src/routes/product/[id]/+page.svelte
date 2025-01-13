@@ -29,7 +29,7 @@
 
   let formLoading = $state(false);
 
-  $inspect(data, $cartItems);
+  // $inspect(data, $cartItems);
 
   $effect(() => {
     if (form && form.from !== "cart") {

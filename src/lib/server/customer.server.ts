@@ -36,7 +36,7 @@ export const createCustomer = async (formData: FormData) => {
 			phoneNumber: `${formData.phoneCountryCode} ${formData.phone}`,
 		});
 
-		console.log(response.result);
+		// console.log(response.result);
 		return {
 			customerId: response.result.customer?.id,
 			customer: response.result.customer,

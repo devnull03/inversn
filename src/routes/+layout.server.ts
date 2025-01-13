@@ -17,8 +17,8 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const orderId = cookies.get('orderId');
 	const customerId = cookies.get('customerId');
 
-	console.log(orderId, customerId);
-	
+	console.log("cookies: ", orderId, " | ", customerId);
+
 
 	const initObjects: any = await getInitObjects(orderId, customerId);
 
@@ -27,10 +27,9 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 		error(500, 'Internal Server Error');
 	}
 
-	console.log(initObjects.customerObject);
-	
+	// console.log("initObjects.customerObject: ", initObjects.customerObject);
 
-	cookies.set('customerId', initObjects.customerObject?.id || '', { path: '/' });
+	initObjects.customerObject?.id && cookies.set('customerId', initObjects.customerObject?.id || '', { path: '/' });
 	cookies.set('orderId', initObjects.orderObject?.id || '', { path: '/' });
 	cookies.set('orderVersion', initObjects.orderObject?.version?.toString() || '', { path: '/' });
 

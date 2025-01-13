@@ -43,7 +43,7 @@
     region: "IN",
   };
 
-  $inspect($cartData, $cartItems);
+  // $inspect($cartData, $cartItems);
 
   onMount(async () => {
     firstLoad = false;

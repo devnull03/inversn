@@ -11,7 +11,6 @@ export const getOrder = async (orderId: string) => {
 		return response.result.order;
 	} catch (error) {
 		console.log(error);
-		return undefined;
 	}
 }
 
@@ -176,5 +175,6 @@ export const createSquareOrder = async (orderDetails: { orderId: string, orderVe
 		}
 	} catch (error) {
 		console.log(error);
+		return { error };
 	}
 }
