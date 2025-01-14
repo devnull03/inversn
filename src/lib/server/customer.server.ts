@@ -26,6 +26,8 @@ export const createCustomer = async (formData: FormData) => {
 			familyName: formData.lastName,
 			emailAddress: formData.email,
 			address: {
+				firstName: formData.firstName,
+				lastName: formData.lastName,
 				addressLine1: formData.address1,
 				addressLine2: formData.address2,
 				locality: formData.city,
@@ -49,5 +51,28 @@ export const createCustomer = async (formData: FormData) => {
 }
 
 export const updateCustomer = async (customerId: string, formData: FormData) => {
-	// TODO: Implement update customer
+	try {
+		const response = await customersApi.updateCustomer(customerId, {
+			emailAddress: formData.email,
+			address: {
+				firstName: formData.firstName,
+				lastName: formData.lastName,
+				addressLine1: formData.address1,
+				addressLine2: formData.address2,
+				locality: formData.city,
+				administrativeDistrictLevel1: formData.state,
+				postalCode: formData.postalCode,
+				country: 'IN',
+			},
+			phoneNumber: `${formData.phoneCountryCode} ${formData.phone}`,
+		});
+
+		return {
+			customerId: response.result.customer?.id,
+			customer: response.result.customer,
+		};
+	} catch (error) {
+		console.log(error);
+		return { error };
+	}
 }

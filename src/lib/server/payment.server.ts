@@ -2,7 +2,7 @@ import { MODE, PROD_PAYU_KEY, PROD_PAYU_SALT, SANDBOX_PAYU_KEY, SANDBOX_PAYU_SAL
 import axios, { toFormData } from 'axios';
 import { paymentsApi } from '$lib/server/clients.server';
 import { createHash, verify } from 'crypto';
-import type { Order } from 'square';
+import type { Customer, Order } from 'square';
 import type { FormData } from '$lib/components/form';
 
 
@@ -157,10 +157,12 @@ function generate_txnid() {
 	);
 }
 
-export const createSquarePaymentRecord = async (order: Order, paymentType: "PayU" | "COD", formData: FormData) => {
+export const createSquarePaymentRecord = async (order: Order, paymentType: "PayU" | "COD", formData: any, customerId: string, txnid: string, mihpayid: string) => {
 	try {
 		let customerData = {
-
+			customerId,
+			buyerEmailAddress: formData.email,
+			buyerPhoneNumber: formData.phone,
 			shippingAddress: {
 				addressLine1: formData.address1,
 				addressLine2: formData.address2,
@@ -169,6 +171,14 @@ export const createSquarePaymentRecord = async (order: Order, paymentType: "PayU
 				postalCode: formData.postalCode,
 				country: 'IN',
 			},
+			billingAddress: {
+				addressLine1: formData.billingAddress1,
+				addressLine2: formData.billingAddress2,
+				locality: formData.billingCity,
+				administrativeDistrictLevel1: formData.billingState,
+				postalCode: formData.billingPostalCode,
+				country: 'IN',
+			}
 		}
 
 		const idempotencyKey = crypto.randomUUID();
@@ -180,9 +190,11 @@ export const createSquarePaymentRecord = async (order: Order, paymentType: "PayU
 				currency: order.totalMoney?.currency
 			},
 			orderId: order.id,
+			referenceId: txnid,
 			externalDetails: {
 				type: 'OTHER',
-				source: paymentType
+				source: paymentType,
+				sourceId: mihpayid
 			},
 			...customerData
 		});
@@ -193,11 +205,11 @@ export const createSquarePaymentRecord = async (order: Order, paymentType: "PayU
 	}
 }
 
-export const buildPaymentRequest = (order: Order, formData: FormData, originUrl: string) => {
+export const buildPaymentRequest = (order: Order, formData: FormData, customer: Customer, originUrl: string) => {
 	try {
 		const txnid = generate_txnid();
 		// console.log("Txnid", txnid, "length: ", txnid.length);
-		
+
 		let rawData = {
 			txnid: txnid,
 			amount: (Number(order.netAmountDueMoney?.amount) / 100).toFixed(2).toString(),
@@ -205,29 +217,32 @@ export const buildPaymentRequest = (order: Order, formData: FormData, originUrl:
 			firstname: formData.firstName as string,
 			lastname: formData.lastName as string,
 			email: formData.email as string,
+			// phone: `${formData.phoneCountryCode} ${formData.phone}`,
 			phone: formData.phone as string,
 			surl: `${originUrl}/checkout/${order.id}/success`,
 			furl: `${originUrl}/checkout/${order.id}/fail`,
 			udf1: order.id as string, // square order id
+			udf2: customer.id as string, // square customer id
 		}
 
-		let addressData;
-		if (formData.billingAddressSame)
-			addressData = {
-				address1: formData.address1,
-				address2: formData.address2,
-				city: formData.city,
-				state: formData.state,
-				country: 'IN',
-				postalCode: formData.postalCode,
-			}
-		else addressData = {
-			address1: formData.billingAddress1,
-			address2: formData.billingAddress2,
-			city: formData.billingCity,
-			state: formData.billingState,
+		let billingAddress = {
+			address1: formData.address1,
+			address2: formData.address2,
+			city: formData.city,
+			state: formData.state,
 			country: 'IN',
-			postalCode: formData.billingPostalCode,
+			zipcode: formData.postalCode,
+		};
+		let shippingAddress;
+		if (!formData.billingAddressSame) {
+			billingAddress = {
+				address1: formData.billingAddress1,
+				address2: formData.billingAddress2,
+				city: formData.billingCity,
+				state: formData.billingState,
+				country: 'IN',
+				zipcode: formData.billingPostalCode,
+			}
 		}
 
 		const creds = {
@@ -235,9 +250,9 @@ export const buildPaymentRequest = (order: Order, formData: FormData, originUrl:
 			salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT,
 		}
 
-		// console.log("Raw Data", rawData);	
+		console.log("Raw Data", rawData, billingAddress, formData);
 		const hash = generateHash({ ...creds, ...rawData });
-		const encodedParams = new URLSearchParams(Object.entries({ key: creds.key, ...rawData, ...addressData, hash }));
+		const encodedParams = new URLSearchParams(Object.entries({ key: creds.key, ...rawData, ...billingAddress, hash }));
 		const url = MODE === 'prod' ? 'https://secure.payu.in/_payment' : 'https://test.payu.in/_payment'
 		const options = {
 			method: 'POST',
@@ -251,7 +266,6 @@ export const buildPaymentRequest = (order: Order, formData: FormData, originUrl:
 			redirect: 'manual'
 		};
 
-		// const response = await axios.request(options);
 		return { options, rawData };
 	} catch (error) {
 		console.error(error);
@@ -323,6 +337,8 @@ export const verifyPayment = async (paymentData: any) => {
 			amt: verifyRes_amount,
 			productinfo: verifyRes_productinfo,
 			firstname: verifyRes_firstname,
+			udf1: verifyRes_udf1,
+			udf2: verifyRes_udf2,
 		} = verifyResponse.data.transaction_details[verifyData.var1];
 
 		const {
@@ -331,13 +347,15 @@ export const verifyPayment = async (paymentData: any) => {
 			amt: checkRes_amount,
 			productinfo: checkRes_productinfo,
 			firstname: checkRes_firstname,
+			udf1: checkRes_udf1,
+			udf2: checkRes_udf2,
 		} = checkResponse.data.transaction_details;
 
-		console.debug('------------------------------------------------------------------')
-		console.debug('paymentData', paymentData, '\n');
-		console.debug('verifyResponse', verifyResponse.data, '\n');
-		console.debug('checkResponse', checkResponse.data, '\n');
-		console.debug('------------------------------------------------------------------')
+		// console.debug('------------------------------------------------------------------')
+		// console.debug('paymentData', paymentData, '\n');
+		// console.debug('verifyResponse', verifyResponse.data, '\n');
+		// console.debug('checkResponse', checkResponse.data, '\n');
+		// console.debug('------------------------------------------------------------------')
 
 		if (
 			paymentData.txnid !== verifyRes_txnid ||
@@ -349,7 +367,11 @@ export const verifyPayment = async (paymentData: any) => {
 			paymentData.productinfo !== verifyRes_productinfo ||
 			paymentData.productinfo !== checkRes_productinfo ||
 			paymentData.firstname !== verifyRes_firstname ||
-			paymentData.firstname !== checkRes_firstname
+			paymentData.firstname !== checkRes_firstname ||
+			paymentData.udf1 !== verifyRes_udf1 ||
+			paymentData.udf1 !== checkRes_udf1 ||
+			paymentData.udf2 !== verifyRes_udf2 ||
+			paymentData.udf2 !== checkRes_udf2
 		) {
 			const mismatchedFields = [];
 			if (paymentData.txnid !== verifyRes_txnid || paymentData.txnid !== checkRes_txnid) mismatchedFields.push(`txnid (expected: ${paymentData.txnid}, verify: ${verifyRes_txnid}, check: ${checkRes_txnid})`);
@@ -357,6 +379,8 @@ export const verifyPayment = async (paymentData: any) => {
 			if (paymentData.amount !== verifyRes_amount || paymentData.amount !== checkRes_amount) mismatchedFields.push(`amount (expected: ${paymentData.amount}, verify: ${verifyRes_amount}, check: ${checkRes_amount})`);
 			if (paymentData.productinfo !== verifyRes_productinfo || paymentData.productinfo !== checkRes_productinfo) mismatchedFields.push(`productinfo (expected: ${paymentData.productinfo}, verify: ${verifyRes_productinfo}, check: ${checkRes_productinfo})`);
 			if (paymentData.firstname !== verifyRes_firstname || paymentData.firstname !== checkRes_firstname) mismatchedFields.push(`firstname (expected: ${paymentData.firstname}, verify: ${verifyRes_firstname}, check: ${checkRes_firstname})`);
+			if (paymentData.udf1 !== verifyRes_udf1 || paymentData.udf1 !== checkRes_udf1) mismatchedFields.push(`udf1 (expected: ${paymentData.udf1}, verify: ${verifyRes_udf1}, check: ${checkRes_udf1})`);
+			if (paymentData.udf2 !== verifyRes_udf2 || paymentData.udf2 !== checkRes_udf2) mismatchedFields.push(`udf2 (expected: ${paymentData.udf2}, verify: ${verifyRes_udf2}, check: ${checkRes_udf2})`);
 
 			return { error: `Transaction details mismatch in fields: ${mismatchedFields.join(', ')}` };
 		}

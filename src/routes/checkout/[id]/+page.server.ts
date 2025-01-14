@@ -45,11 +45,12 @@ export const actions: Actions = {
 
 		// Steps:
 		// Create a customer
-		let customer;
+		let customer = await createCustomer(form.data);
 
-		if (event.cookies.get("customerId"))
-			customer = await getCustomer(event.cookies.get("customerId") as string);
-		else customer = await createCustomer(form.data);
+		// TODO: impliment accounts securly
+		// if (event.cookies.get("customerId"))
+		// 	customer = await getCustomer(event.cookies.get("customerId") as string);
+		// else customer = await createCustomer(form.data);
 
 		// console.log("Customer", customer);
 
@@ -81,7 +82,7 @@ export const actions: Actions = {
 		console.log("Created Order");
 
 		// build PayU payment request to send to client
-		const { options: paymentReqOptions, rawData: paymentData, error: paymentError } = buildPaymentRequest(openOrder?.order as Order, form.data, event.url.origin);
+		const { options: paymentReqOptions, rawData: paymentData, error: paymentError } = buildPaymentRequest(openOrder?.order as Order, form.data, customer?.customer as Customer, event.url.origin);
 
 		if (paymentError || !paymentReqOptions) {
 			return fail(500, {
@@ -98,7 +99,7 @@ export const actions: Actions = {
 				{
 					customAttribute: {
 						key: 'txnid',
-						value: `${paymentData.txnid}|${paymentData.firstname}|${paymentData.email}`,
+						value: `${paymentData.txnid}|${paymentData.firstname}|${paymentData.email}|${paymentData.phone}`,
 					},
 					idempotencyKey: orderCustomAttributeIdempotencyKey,
 				});
