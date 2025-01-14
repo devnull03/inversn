@@ -10,6 +10,7 @@
     IndianStates,
   } from "$lib/components/form";
   import { toast } from "svelte-sonner";
+  import { Reload } from "svelte-radix";
 
   let { data, form: rawFormResponse } = $props();
   let formLoading = $state(false);
@@ -22,14 +23,14 @@
           duration: 5000,
         });
 
-        console.log("payment data", rawFormResponse);
+        console.log("payment data", rawFormResponse?.redirectUrl);
 
-        formLoading = false;
+        // goto(rawFormResponse?.redirectUrl);
         window.location.href = rawFormResponse?.redirectUrl;
-
       } else {
         toast.error("Please fix the errors in the form.");
       }
+      formLoading = false;
     },
     onSubmit: async (event) => {
       console.log("Submitting form", event);
@@ -246,7 +247,12 @@
         </div>
       </div>
 
-      <Form.Button type="submit">Pay now</Form.Button>
+      <Form.Button bind:disabled={formLoading} type="submit">
+        {#if formLoading}
+          <Reload class="h-4 w-4 animate-spin" />
+        {/if}
+        Pay now
+      </Form.Button>
     </div>
   </section>
 

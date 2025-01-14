@@ -1,7 +1,7 @@
 import { MODE, PROD_PAYU_KEY, PROD_PAYU_SALT, SANDBOX_PAYU_KEY, SANDBOX_PAYU_SALT } from '$env/static/private';
 import axios, { toFormData } from 'axios';
 import { paymentsApi } from '$lib/server/clients.server';
-import { createHash } from 'crypto';
+import { createHash, verify } from 'crypto';
 import type { Order } from 'square';
 import type { FormData } from '$lib/components/form';
 
@@ -76,16 +76,22 @@ const generateHash = ({
 	return cryp.digest('hex');
 }
 
-/* Response received from Payment Gateway at this page.
-It is absolutely mandatory that the hash (or checksum) is computed again after you receive response from PayU and compare it with request and post back parameters. This will protect you from any tampering by the user and help in ensuring a safe and secure transaction experience. It is mandate that you secure your integration with PayU by implementing Verify webservice and Webhook/callback as a secondary confirmation of transaction response.
-
-Hash string without Additional Charges -
-hash = sha512(SALT|status||||||udf5|||||email|firstname|productinfo|amount|txnid|key)
-
-With additional charges - 
-hash = sha512(additionalCharges|SALT|status||||||udf5|||||email|firstname|productinfo|amount|txnid|key)
-
-*/
+const generateVerifyHash = ({
+	key,
+	salt,
+	var1,
+	command,
+}: {
+	key: string,
+	salt: string,
+	var1: string,
+	command: string,
+}) => {
+	const cryp = createHash('sha512');
+	const text = key + '|' + command + '|' + var1 + '|' + salt;
+	cryp.update(text);
+	return cryp.digest('hex');
+}
 
 const validateHash = (hash: string, {
 	key,
@@ -118,6 +124,16 @@ const validateHash = (hash: string, {
 	status: string,
 	additionalCharges?: string,
 }) => {
+	/* Response received from Payment Gateway at this page.
+	It is absolutely mandatory that the hash (or checksum) is computed again after you receive response from PayU and compare it with request and post back parameters. This will protect you from any tampering by the user and help in ensuring a safe and secure transaction experience. It is mandate that you secure your integration with PayU by implementing Verify webservice and Webhook/callback as a secondary confirmation of transaction response.
+	
+	Hash string without Additional Charges -
+	hash = sha512(SALT|status||||||udf5|||||email|firstname|productinfo|amount|txnid|key)
+	
+	With additional charges - 
+	hash = sha512(additionalCharges|SALT|status||||||udf5|||||email|firstname|productinfo|amount|txnid|key)
+	
+	*/
 	validateParams({ key, salt, txnid, amount, productinfo, firstname, email, udf1, udf2, udf3, udf4, udf5 });
 	if (typeof status !== 'string') {
 		throw new TypeError('TypeError: Param "status" required of type String');
@@ -135,9 +151,13 @@ const validateHash = (hash: string, {
 	return calchash === hash;
 }
 
+function generate_txnid() {
+	return ('10000000-1000-4000-8000').replace(/[018]/g, c => (
+		Number(c) ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))).toString(16)
+	);
+}
 
-
-export const createSquarePayment = async (order: Order, paymentType: "PayU" | "COD", formData: FormData) => {
+export const createSquarePaymentRecord = async (order: Order, paymentType: "PayU" | "COD", formData: FormData) => {
 	try {
 		let customerData = {
 
@@ -175,9 +195,12 @@ export const createSquarePayment = async (order: Order, paymentType: "PayU" | "C
 
 export const buildPaymentRequest = (order: Order, formData: FormData, originUrl: string) => {
 	try {
+		const txnid = generate_txnid();
+		// console.log("Txnid", txnid, "length: ", txnid.length);
+		
 		let rawData = {
-			txnid: crypto.randomUUID(), // TODO
-			amount: (Number(order.netAmountDueMoney?.amount) / 100).toString(),
+			txnid: txnid,
+			amount: (Number(order.netAmountDueMoney?.amount) / 100).toFixed(2).toString(),
 			productinfo: order.lineItems?.map(item => item.name).join(', ') as string,
 			firstname: formData.firstName as string,
 			lastname: formData.lastName as string,
@@ -212,6 +235,7 @@ export const buildPaymentRequest = (order: Order, formData: FormData, originUrl:
 			salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT,
 		}
 
+		// console.log("Raw Data", rawData);	
 		const hash = generateHash({ ...creds, ...rawData });
 		const encodedParams = new URLSearchParams(Object.entries({ key: creds.key, ...rawData, ...addressData, hash }));
 		const url = MODE === 'prod' ? 'https://secure.payu.in/_payment' : 'https://test.payu.in/_payment'
@@ -235,31 +259,114 @@ export const buildPaymentRequest = (order: Order, formData: FormData, originUrl:
 	}
 }
 
-export const verifyPaymentResponse = (response: any, rawData: any) => {
+export const verifyPaymentResponse = (responseData: { hash: string, status: string }, rawData: any) => {
 	const creds = {
 		key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY,
 		salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT,
 	}
 
-	const parsedResponse = new URLSearchParams(response.data);
+	const reverseHash = responseData.hash;
+	const txnStatus = responseData.status;
 
-	const reverseHash = parsedResponse.get('hash');
-	const txnStatus = parsedResponse.get('status');
+	if (txnStatus !== 'success') return { status: "failed", error: "Transaction failed" };
+	if (!reverseHash || !txnStatus) return { status: "failed", error: "Invalid response" };
 
-	if (txnStatus !== 'success') return { error: "Transaction failed" };
-	if (!reverseHash || !txnStatus) return { error: "Invalid response" };
 	const isValidHash = validateHash(reverseHash, {
 		...creds,
 		...rawData,
 		status: txnStatus,
 	})
 
-	if (!isValidHash) return { error: "Invalid hash" };
-
-	return { status: txnStatus, ...parsedResponse }
+	if (!isValidHash) return { status: "failed", error: "Invalid hash" };
+	return { status: "verified" }
 }
 
 export const verifyPayment = async (paymentData: any) => {
+
+	try {
+
+		const verifyData = {
+			key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY, command: 'verify_payment', var1: paymentData.txnid,
+		}
+		const verifyOptions = {
+			method: 'POST',
+			url: MODE === 'prod' ? 'https://info.payu.in/merchant/postservice?form=2' : 'https://test.payu.in/merchant/postservice?form=2',
+			headers: { 'content-type': 'application/x-www-form-urlencoded' },
+			data: new URLSearchParams({
+				...verifyData,
+				hash: generateVerifyHash({ ...verifyData, salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT })
+			}),
+		}
+
+		const checkData = {
+			key: MODE === 'prod' ? PROD_PAYU_KEY : SANDBOX_PAYU_KEY, command: 'check_payment', var1: paymentData.mihpayid,
+		}
+		const checkOptions = {
+			method: 'POST',
+			url: MODE === 'prod' ? 'https://info.payu.in/merchant/postservice?form=2' : 'https://test.payu.in/merchant/postservice?form=2',
+			headers: { 'content-type': 'application/x-www-form-urlencoded' },
+			data: new URLSearchParams({
+				...checkData,
+				hash: generateVerifyHash({ ...checkData, salt: MODE === 'prod' ? PROD_PAYU_SALT : SANDBOX_PAYU_SALT })
+			}),
+		}
+
+		const [verifyResponse, checkResponse] = await Promise.all([axios.request(verifyOptions), axios.request(checkOptions)]);
+
+		if (verifyResponse.data.status !== 1 || checkResponse.data.status !== 1) {
+			return { error: "Invalid transaction" };
+		}
+
+		const {
+			mihpayid: verifyRes_mihpayid,
+			txnid: verifyRes_txnid,
+			amt: verifyRes_amount,
+			productinfo: verifyRes_productinfo,
+			firstname: verifyRes_firstname,
+		} = verifyResponse.data.transaction_details[verifyData.var1];
+
+		const {
+			mihpayid: checkRes_mihpayid,
+			txnid: checkRes_txnid,
+			amt: checkRes_amount,
+			productinfo: checkRes_productinfo,
+			firstname: checkRes_firstname,
+		} = checkResponse.data.transaction_details;
+
+		console.debug('------------------------------------------------------------------')
+		console.debug('paymentData', paymentData, '\n');
+		console.debug('verifyResponse', verifyResponse.data, '\n');
+		console.debug('checkResponse', checkResponse.data, '\n');
+		console.debug('------------------------------------------------------------------')
+
+		if (
+			paymentData.txnid !== verifyRes_txnid ||
+			paymentData.txnid !== checkRes_txnid ||
+			// paymentData.mihpayid !== verifyRes_mihpayid ||
+			// paymentData.mihpayid !== checkRes_mihpayid ||
+			paymentData.amount !== verifyRes_amount ||
+			paymentData.amount !== checkRes_amount ||
+			paymentData.productinfo !== verifyRes_productinfo ||
+			paymentData.productinfo !== checkRes_productinfo ||
+			paymentData.firstname !== verifyRes_firstname ||
+			paymentData.firstname !== checkRes_firstname
+		) {
+			const mismatchedFields = [];
+			if (paymentData.txnid !== verifyRes_txnid || paymentData.txnid !== checkRes_txnid) mismatchedFields.push(`txnid (expected: ${paymentData.txnid}, verify: ${verifyRes_txnid}, check: ${checkRes_txnid})`);
+			if (paymentData.mihpayid !== verifyRes_mihpayid || paymentData.mihpayid !== checkRes_mihpayid) mismatchedFields.push(`mihpayid (expected: ${paymentData.mihpayid}, verify: ${verifyRes_mihpayid}, check: ${checkRes_mihpayid})`);
+			if (paymentData.amount !== verifyRes_amount || paymentData.amount !== checkRes_amount) mismatchedFields.push(`amount (expected: ${paymentData.amount}, verify: ${verifyRes_amount}, check: ${checkRes_amount})`);
+			if (paymentData.productinfo !== verifyRes_productinfo || paymentData.productinfo !== checkRes_productinfo) mismatchedFields.push(`productinfo (expected: ${paymentData.productinfo}, verify: ${verifyRes_productinfo}, check: ${checkRes_productinfo})`);
+			if (paymentData.firstname !== verifyRes_firstname || paymentData.firstname !== checkRes_firstname) mismatchedFields.push(`firstname (expected: ${paymentData.firstname}, verify: ${verifyRes_firstname}, check: ${checkRes_firstname})`);
+
+			return { error: `Transaction details mismatch in fields: ${mismatchedFields.join(', ')}` };
+		}
+
+		return { status: "verified" };
+
+	} catch (error) {
+		console.log(error);
+		return { error };
+	}
 
 }
 

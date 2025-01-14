@@ -1,6 +1,6 @@
-import type { Actions, PageServerLoad } from "./$types.js";
+import type { Actions, PageServerLoad } from "./$types";
 import { superValidate } from "sveltekit-superforms";
-import { formSchema } from "$lib/components/form/schema.js";
+import { formSchema } from "$lib/components/form/schema";
 import { zod } from "sveltekit-superforms/adapters";
 import { fail } from "@sveltejs/kit";
 import { createCustomer, getCustomer } from "$lib/server/customer.server";
@@ -8,6 +8,7 @@ import { createSquareOrder } from "$lib/server/orders.server";
 import type { Customer, Order } from "square";
 import { buildPaymentRequest } from "$lib/server/payment.server";
 import axios from "axios";
+import { orderCustomAttributesApi } from "$lib/server/clients.server";
 
 
 
@@ -50,8 +51,8 @@ export const actions: Actions = {
 			customer = await getCustomer(event.cookies.get("customerId") as string);
 		else customer = await createCustomer(form.data);
 
-		console.log("Customer", customer);
-		
+		// console.log("Customer", customer);
+
 
 		if (customer.error) {
 			return fail(500, {
@@ -64,9 +65,18 @@ export const actions: Actions = {
 
 		// change order state to OPEN
 		const openOrder = await createSquareOrder(orderDetails, customer.customer as Customer, form.data);
-		if (openOrder) {
-			event.cookies.set("orderId", openOrder.order?.id as string, { path: "/" });
-			event.cookies.set("orderVersion", openOrder.order?.version?.toString() as string, { path: "/" });
+
+		if (openOrder.error) {
+			return fail(500, {
+				form, message: "error creating order", error: openOrder.error
+			});
+		}
+
+		if (openOrder && openOrder.orderId && openOrder.orderVersion) {
+			console.log("setting order cookies");
+
+			event.cookies.set("orderId", openOrder.orderId as string, { path: "/" });
+			event.cookies.set("orderVersion", openOrder.orderVersion.toString() as string, { path: "/" });
 		}
 		console.log("Created Order");
 
@@ -81,9 +91,21 @@ export const actions: Actions = {
 
 		const paymentRes = await axios.request(paymentReqOptions)
 
-		console.log("payment status:", paymentRes.request.responseUrl);
+		try {
+			const orderCustomAttributeIdempotencyKey = crypto.randomUUID();
+			const response = await orderCustomAttributesApi.upsertOrderCustomAttribute(openOrder?.orderId as string,
+				'txnid',
+				{
+					customAttribute: {
+						key: 'txnid',
+						value: `${paymentData.txnid}|${paymentData.firstname}|${paymentData.email}`,
+					},
+					idempotencyKey: orderCustomAttributeIdempotencyKey,
+				});
+		} catch (error) {
+			console.log(error);
+		}
 
-	
 		// SUCCESS
 		// create a external payment in square
 		// do delhivery stuff.... i need to check exactly how
@@ -95,15 +117,7 @@ export const actions: Actions = {
 			form,
 			customer,
 			order: openOrder,
-			redirectUrl: paymentRes.request.responseUrl,
-
-			// paymentReqOptions: {
-			// 	...paymentReqOptions,
-			// 	data: paymentReqOptions?.data.toString(),
-			// 	paymentResData: paymentRes.data,
-			// 	// @ts-ignore
-			// 	pyamentResHeaders: paymentRes.headers.toJSON(),
-			// },
+			redirectUrl: paymentRes.request.res.responseUrl,
 		};
 	},
 };
