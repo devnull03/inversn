@@ -110,7 +110,19 @@ export const actions: Actions = {
 			discountCode: data.get('discountCode') as string,
 			...billingAddress
 		};
-		const squarePaymentRecordResponse = await createSquarePaymentRecord(orderResponse as Order, "PayU", paymentRecordData, customerResponse.customer?.id as string, data.get('txnid') as string, data.get('mihpayid') as string);
+		// TODO: review
+		const squarePaymentRecordResponse = await createSquarePaymentRecord(
+			orderResponse as Order,
+			"PayU",
+			paymentRecordData,
+			customerResponse.customer?.id as string,
+			data.get('txnid') as string,
+			data.get('mihpayid') as string
+		);
+
+		if (squarePaymentRecordResponse?.statusCode !== 200) {
+			return ;
+		}
 
 		return {
 			status: 200,

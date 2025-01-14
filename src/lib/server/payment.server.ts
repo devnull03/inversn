@@ -199,7 +199,7 @@ export const createSquarePaymentRecord = async (order: Order, paymentType: "PayU
 			...customerData
 		});
 
-		return response.result;
+		return { ...response };
 	} catch (error) {
 		console.log(error);
 	}
