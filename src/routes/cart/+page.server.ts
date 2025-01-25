@@ -67,6 +67,7 @@ export const actions: Actions = {
 
 		return {
 			variationId: lineItemUid,
+			from: "cart",
 			...res,
 		}
 	},
@@ -108,6 +109,7 @@ export const actions: Actions = {
 
 		return {
 			variationId: lineItemUid,
+			from: "cart",
 			...res,
 		}
 	}

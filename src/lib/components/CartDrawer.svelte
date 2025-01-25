@@ -61,8 +61,9 @@
 
 <Sheet.Root bind:open={$cartOpen}>
   <Sheet.Content>
-    <div class="h-full flex flex-col justify-between">
-      <div class="h-full">
+
+    <div class="h-[95vh] flex flex-col">
+      <div class="h-[82vh]">
         <Sheet.Header>
           <Sheet.Title
             >Cart <i class="fa-solid fa-cart-shopping"></i></Sheet.Title
@@ -70,7 +71,7 @@
           <Sheet.Description>Items in your cart</Sheet.Description>
         </Sheet.Header>
 
-        <ScrollArea class="w-full h-full">
+        <ScrollArea class="w-full h-[73vh]">
           <form
             class="flex flex-col gap-4"
             action="/cart?/update"
@@ -165,7 +166,7 @@
         </ScrollArea>
       </div>
 
-      <div class="w-full border-t border-black pt-2 flex flex-col gap-4">
+      <div class="h-[13vh] w-full border-t border-black bg-white flex flex-col gap-4">
         <p class="flex justify-between w-full">
           <span>Total</span>
           <span>{formatPrice($cartData.orderObject?.totalMoney?.amount)}</span>
@@ -188,5 +189,6 @@
         </Button>
       </div>
     </div>
+
   </Sheet.Content>
 </Sheet.Root>

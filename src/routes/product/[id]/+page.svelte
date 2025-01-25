@@ -29,10 +29,11 @@
 
   let formLoading = $state(false);
 
-  $inspect(data, $cartItems);
+  // $inspect(data, $cartItems);
 
   $effect(() => {
-    if (form) {
+    if (form && form.from !== "cart") {
+
       cartData.update((val) => {
         val.orderId = form.orderId;
         val.orderVersion =

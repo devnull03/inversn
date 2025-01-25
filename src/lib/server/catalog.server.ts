@@ -18,8 +18,10 @@ export const getInitObjects = async (orderId: string | undefined, customerId: st
 			orderId ? getOrder(orderId) : undefined,
 			customerId ? getCustomer(customerId) : undefined,
 		]);
-
+		// console.log("[catalog.server.ts] customerResponse: ", customerResponse);
+		
 		if (categoryResponse.result.errors) throw categoryResponse.result.errors;
+		if (customerResponse?.error) throw customerResponse?.error;
 
 		let landingPageCategoryId = categoryResponse.result?.objects?.find(category => category.categoryData?.name === landingPageCategoryName)?.id;
 

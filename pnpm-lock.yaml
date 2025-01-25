@@ -32,9 +32,6 @@ importers:
       gsap:
         specifier: ^3.12.5
         version: 3.12.5
-      payu-sdk:
-        specifier: ^1.1.1
-        version: 1.1.1
       resend:
         specifier: ^4.0.1
         version: 4.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1375,9 +1372,6 @@ packages:
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
-
-  payu-sdk@1.1.1:
-    resolution: {integrity: sha512-OW5pSE1XRIdGt9RLa8TVI+H5V5L2p60+csFJBlcQsLNj4Mdrxf/nr7r5cmefVWG6YJtn+CUNul7sJU/LxpL8Yg==}
 
   peberminta@0.9.0:
     resolution: {integrity: sha512-XIxfHpEuSJbITd1H3EeQwpcZbTLHc+VVr8ANI9t5sit565tsI4/xK3KWTUFE2e6QiangUkh3B0jihzmGnNrRsQ==}
@@ -2994,8 +2988,6 @@ snapshots:
     dependencies:
       lru-cache: 10.4.3
       minipass: 7.1.2
-
-  payu-sdk@1.1.1: {}
 
   peberminta@0.9.0: {}
 

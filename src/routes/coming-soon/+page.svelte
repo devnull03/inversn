@@ -3,7 +3,6 @@
   import { zodClient } from "sveltekit-superforms/adapters";
   import { formSchema } from "./schema";
   import * as Form from "$lib/components/ui/form";
-  import { Input } from "$lib/components/ui/input";
   import { onMount } from "svelte";
   import { gsap } from "gsap";
   import { horizontalLoop } from "$lib/utils";

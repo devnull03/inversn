@@ -24,6 +24,7 @@
     <div class="flex items-center gap-2">
       <Checkbox {...attrs} bind:checked={formDataField} />
       <p>{label}</p>
+      <input type="hidden" {name} bind:value={formDataField} />
     </div>
   </Form.Control>
   <Form.FieldErrors />

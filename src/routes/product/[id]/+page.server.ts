@@ -57,6 +57,7 @@ export const actions: Actions = {
 
 		return {
 			variationId,
+			from: 'product',
 			...res,
 		}
 	},
