@@ -60,7 +60,7 @@
       <div class="flex justify-between font-light w-full whitespace-nowrap overflow-clip">
         <p class="">{productData.itemData?.name}</p>
         <p>
-          {formatPrice(itemBaseData?.priceMoney?.amount)}
+          {formatPrice(itemBaseData?.priceMoney)}
         </p>
       </div>
     </a>

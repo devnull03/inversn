@@ -122,7 +122,7 @@
     <div class="p-4 flex flex-col gap-4">
       <h1 class="text-3xl">{data.product?.itemData?.name}</h1>
 
-      <p>{formatPrice(itemBaseData?.priceMoney?.amount)}</p>
+      <p>{formatPrice(itemBaseData?.priceMoney)}</p>
 
       <Select.Root>
         <Select.Trigger class="w-[180px]">

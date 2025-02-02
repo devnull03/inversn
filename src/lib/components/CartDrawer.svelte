@@ -102,7 +102,7 @@
                   {#if cartUpdateLoading && actionIdx === idx}
                     <Reload class="h-4 w-4 animate-spin" />
                   {:else}
-                    {formatPrice(item.totalMoney?.amount)}
+                    {formatPrice(item.totalMoney)}
                   {/if}
                 </p>
                 <p class="text-sm">
@@ -170,7 +170,7 @@
       <div class="w-full border-t border-black bg-white flex flex-col gap-4">
         <p class="flex justify-between w-full">
           <span>Total</span>
-          <span>{formatPrice($cartData.orderObject?.totalMoney?.amount)}</span>
+          <span>{formatPrice($cartData.orderObject?.totalMoney)}</span>
         </p>
         <Button
           class="w-full"

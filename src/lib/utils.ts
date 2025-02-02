@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
 import { gsap } from "gsap";
+import type { Money } from "square";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -63,9 +64,9 @@ export const flyAndScale = (
 };
 
 
-export const formatPrice = (price: bigint | undefined | null) => {
+export const formatPrice = (money: Money | undefined) => {
 	//   <!-- ₹ -->
-	return price ? `INR₹ ${Number(price) / 100}` : "N/A";
+	return money ? `INR₹ ${(Number(money.amount) / 100).toLocaleString()}` : "N/A";
 }
 
 // @ts-ignore
