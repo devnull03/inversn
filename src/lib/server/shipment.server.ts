@@ -1,7 +1,12 @@
 import { delhiveryAPI } from "$lib/server/clients.server";
 
 export const checkPincodeServiceability = async (pincode: string) => {
-	let url = `/c/api/pin-codes/json/?parameters`
+	let url = `/c/api/pin-codes/json/`
+	let response = await delhiveryAPI.get(url, {
+		params: {
+			filter_codes: pincode
+		}
+	})
 }
 
 export type ShipmentCostParams = {

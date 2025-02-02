@@ -57,13 +57,14 @@
     console.log("cart drawer action:", result);
     // applyAction(result);
   }
+
+  $inspect($cartItems);
 </script>
 
 <Sheet.Root bind:open={$cartOpen}>
-  <Sheet.Content>
-
-    <div class="h-[95vh] flex flex-col">
-      <div class="h-[82vh]">
+  <Sheet.Content class="!p-0">
+    <div class="h-screen p-6 flex flex-col justify-between">
+      <div class="">
         <Sheet.Header>
           <Sheet.Title
             >Cart <i class="fa-solid fa-cart-shopping"></i></Sheet.Title
@@ -71,7 +72,7 @@
           <Sheet.Description>Items in your cart</Sheet.Description>
         </Sheet.Header>
 
-        <ScrollArea class="w-full h-[73vh]">
+        <ScrollArea class="w-full max-h-[80vh] h-full">
           <form
             class="flex flex-col gap-4"
             action="/cart?/update"
@@ -92,7 +93,7 @@
             <input type="hidden" name="type" bind:value={actionType} />
             <input type="hidden" name="idx" bind:value={actionIdx} />
 
-            {#each $cartItems as item, idx (item.uid)}
+            {#each $cartItems as item, idx}
               <div
                 class="flex flex-col gap-4 border-b border-black last:border-none p-4"
               >
@@ -166,7 +167,7 @@
         </ScrollArea>
       </div>
 
-      <div class="h-[13vh] w-full border-t border-black bg-white flex flex-col gap-4">
+      <div class="w-full border-t border-black bg-white flex flex-col gap-4">
         <p class="flex justify-between w-full">
           <span>Total</span>
           <span>{formatPrice($cartData.orderObject?.totalMoney?.amount)}</span>
@@ -189,6 +190,5 @@
         </Button>
       </div>
     </div>
-
   </Sheet.Content>
 </Sheet.Root>

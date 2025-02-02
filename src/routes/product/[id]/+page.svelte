@@ -22,44 +22,11 @@
   );
 
   let selectedVariation = $state<CatalogObject | undefined>();
-  // let selectedVariationId = $derived(selectedVariation?.id);
   let itemInCart = $derived(
     $cartItems.find((item) => item.catalogObjectId === selectedVariation?.id)
   );
 
   let formLoading = $state(false);
-
-  // $inspect(data, $cartItems);
-
-  $effect(() => {
-    if (form && form.from !== "cart") {
-
-      cartData.update((val) => {
-        val.orderId = form.orderId;
-        val.orderVersion =
-          typeof form.orderVersion === "string"
-            ? parseInt(form.orderVersion)
-            : form.orderVersion;
-        val.orderObject = form.order;
-        return val;
-      });
-
-      cartItems.update((val) => {
-        val.push({
-          ...form?.lineItem,
-          catalogObject: data?.product,
-          image: itemImages[0],
-          quantity: form?.lineItem?.quantity as string,
-        });
-        return val;
-      });
-
-      untrack(() => {
-        formLoading = false;
-        $cartOpen = true;
-      });
-    }
-  });
 
   onMount(() => {});
 </script>
@@ -68,8 +35,45 @@
   <form
     use:enhance={() => {
       formLoading = true;
-      return async ({ update }) => {
+      return async ({ result, update }) => {
+        console.log("form result", result);
+        console.log(
+          "if statement",
+          result.type === "success" && result.data?.form === "product"
+        );
+
+        if (result.type === "success" && result.data?.form === "product") {
+          let form = result.data as {
+            orderId: string;
+            orderVersion: string | number;
+            order: any;
+            lineItem: any;
+          };
+
+          cartData.update((val) => {
+            val.orderId = form.orderId;
+            val.orderVersion =
+              typeof form.orderVersion === "string"
+                ? parseInt(form.orderVersion)
+                : form.orderVersion;
+            val.orderObject = form.order;
+            return val;
+          });
+
+          cartItems.update((val) => {
+            val.push({
+              ...form?.lineItem,
+              catalogObject: data?.product,
+              image: itemImages[0],
+              quantity: form?.lineItem?.quantity as string,
+            });
+            return val;
+          });
+
+          $cartOpen = true;
+        }
         update();
+        formLoading = false;
       };
     }}
     method="POST"
