@@ -8,6 +8,7 @@
     name: string;
     options: any[];
     label: string;
+    required?: boolean;
     description?: string;
     class?: string;
   }
@@ -19,7 +20,8 @@
     label,
     name,
     description,
-    class: className
+    class: className,
+    required,
   }: Props = $props();
 
   let selected = $derived(
@@ -50,7 +52,7 @@
         {/each}
       </Select.Content>
     </Select.Root>
-    <input type="hidden" {name} bind:value={formDataField} />
+    <input type="hidden" {required} {name} bind:value={formDataField} />
     {#if description}
       <Form.Description>{description}</Form.Description>
     {/if}

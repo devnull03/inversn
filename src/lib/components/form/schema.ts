@@ -50,7 +50,7 @@ export const formSchema = z.object({
     country: z.literal("India").default("India"),
     firstName: z.string(),
     lastName: z.string().optional().default(""),
-    address1: z.string().default(""),
+    address1: z.string(),
     address2: z.string().optional().default(""),
     city: z.string(),
     state: z.nativeEnum(IndianStates),

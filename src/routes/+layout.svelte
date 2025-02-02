@@ -115,7 +115,11 @@
   <meta name="keywords" content={siteData.keywords.join(", ")} />
   <meta property="og:title" content={PUBLIC_COMPANY_NAME} />
   <meta property="og:description" content={siteData.description} />
-  <meta property="og:image" itemprop="image" content="/favicon/web-app-manifest-512x512.png" />
+  <meta
+    property="og:image"
+    itemprop="image"
+    content="/favicon/web-app-manifest-512x512.png"
+  />
   <meta property="og:url" content={PUBLIC_DOMAIN} />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content={PUBLIC_COMPANY_NAME} />
@@ -139,12 +143,12 @@
 {#if page.url.pathname !== "/coming-soon"}
   <div
     in:fade={{ duration: 400 }}
-    class="flex h-screen flex-col justify-between"
+    class="flex h-screen flex-col justify-between mt-24"
   >
     <Header />
-    <main class="mt-24">
+    <div>
       {@render children?.()}
-    </main>
+    </div>
     <Footer />
   </div>
 {:else}

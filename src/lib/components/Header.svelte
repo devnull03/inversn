@@ -7,6 +7,7 @@
   // import { toast } from "svelte-sonner";
   import { cartOpen, isMobile, scrollThreshold } from "$lib/stores.svelte";
   import Logo from "$lib/icons/Logo.svelte";
+  import { page } from "$app/state";
 
   let initScroll = $state(0);
   // let isLandingPage = $derived($page.route.id === "/");
@@ -28,7 +29,7 @@
 
 <svelte:window bind:scrollY={initScroll} />
 
-<nav class="realtive">
+<nav class="relative">
   {#if !isLandingPage}
     <div class="fixed left-[6%] top-6 z-[55] aspect-square h-10">
       <Logo class="fill-background" />
@@ -49,35 +50,37 @@
       {PUBLIC_COMPANY_NAME}
     </button>
 
-    <button
-      class="absolute right-4 top-0 px-8 py-10 md:hidden lg:hidden {initScroll <
-        $scrollThreshold && isLandingPage
-        ? 'text-white'
-        : 'text-white'}"
-      bind:clientWidth={mobileNavButtonWidth}
-      onclick={() => (mobileNavOpen = !mobileNavOpen)}
-    >
-      {#if mobileNavOpen}
-        <span class="fa fa-times scale-150"></span>
-      {:else}
-        <span class="fa fa-bars scale-150"></span>
-      {/if}
-    </button>
-
-    {#if !$isMobile || mobileNavOpen}
-      <div
-        transition:slide
-        class="absolute top-24 z-[999] -mx-[6%] flex w-screen flex-col items-center justify-evenly gap-8 border-b border-black py-4 md:relative md:top-0 md:mx-0 md:w-auto md:flex-row md:border-transparent md:bg-transparent md:py-0"
+    {#if !page.url.pathname.includes("/checkout")}
+      <button
+        class="absolute right-4 top-0 px-8 py-10 md:hidden lg:hidden {initScroll <
+          $scrollThreshold && isLandingPage
+          ? 'text-white'
+          : 'text-white'}"
+        bind:clientWidth={mobileNavButtonWidth}
+        onclick={() => (mobileNavOpen = !mobileNavOpen)}
       >
-        <!-- nav buttons -->
-        <button class="fa-solid fa-user text-xl" aria-label="login"></button>
+        {#if mobileNavOpen}
+          <span class="fa fa-times scale-150"></span>
+        {:else}
+          <span class="fa fa-bars scale-150"></span>
+        {/if}
+      </button>
 
-        <button
-          onclick={() => ($cartOpen = !$cartOpen)}
-          class="fa-solid fa-cart-shopping text-xl"
-          aria-label="Toggle cart"
-        ></button>
-      </div>
+      {#if !$isMobile || mobileNavOpen}
+        <div
+          transition:slide
+          class="absolute top-24 z-[999] -mx-[6%] flex w-screen flex-col items-center justify-evenly gap-8 border-b border-black py-4 md:relative md:top-0 md:mx-0 md:w-auto md:flex-row md:border-transparent md:bg-transparent md:py-0"
+        >
+          <!-- nav buttons -->
+          <button class="fa-solid fa-user text-xl" aria-label="login"></button>
+
+          <button
+            onclick={() => ($cartOpen = !$cartOpen)}
+            class="fa-solid fa-cart-shopping text-xl"
+            aria-label="Toggle cart"
+          ></button>
+        </div>
+      {/if}
     {/if}
   </div>
 </nav>

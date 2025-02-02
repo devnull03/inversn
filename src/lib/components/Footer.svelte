@@ -9,7 +9,7 @@
 </script>
 
 <footer
-  class="flex h-[50vh] flex-col items-center gap-8 bg-black px-[6%] pb-4 pt-16 text-white"
+  class="flex h-[50vh] z-10 flex-col items-center gap-8 bg-black px-[6%] pb-4 pt-16 text-white"
 >
   <div
     class="flex w-full flex-row justify-between text-[#FFFFFF99] *:*:underline *:*:transition-all *:*:duration-300 *:*:ease-in-out hover:*:*:text-white"

@@ -7,17 +7,18 @@
     formDataField: any;
     name: string;
     label: string;
+    required?: boolean;
     description?: string;
     class?: string;
   }
 
-  let { formDataField = $bindable(), form, label, name, description, class: className }: Props = $props();
+  let { formDataField = $bindable(), form, label, name, description, class: className, required }: Props = $props();
 </script>
 
 <Form.Field {form} {name} class={className}>
   <Form.Control let:attrs>
     <Form.Label>{label}</Form.Label>
-    <Input {...attrs} bind:value={formDataField} placeholder={label} />
+    <Input {...attrs} bind:value={formDataField} placeholder={label} {required} />
     {#if description}
       <Form.Description>{description}</Form.Description>
     {/if}

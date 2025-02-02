@@ -12,5 +12,5 @@ import type { CatalogItemVariation, CatalogObject, OrderLineItem } from "square"
 
 export type CartItem = OrderLineItem & {
 	catalogObject?: CatalogObject;
-	image?: CatalogObject;
+	images?: CatalogObject;
 } 
