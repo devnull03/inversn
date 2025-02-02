@@ -1,6 +1,7 @@
-import { RESEND_AUDIENCE_ID } from "$env/static/private";
-import { resend } from "./clients.server";
+import { RESEND_API_KEY, RESEND_AUDIENCE_ID } from "$env/static/private";
+import { Resend } from "resend";
 
+const resend = new Resend(RESEND_API_KEY);
 
 export const createEmailSignup = async (email: string) => {
 	try {

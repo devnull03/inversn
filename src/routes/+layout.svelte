@@ -1,22 +1,9 @@
 <script lang="ts">
   import "../app.css";
-  import { onMount } from "svelte";
   import { fade } from "svelte/transition";
-  // import { navigating } from "$app/state";
   import { PUBLIC_COMPANY_NAME, PUBLIC_DOMAIN } from "$env/static/public";
-  import Footer from "$lib/components/Footer.svelte";
-  import Header from "$lib/components/Header.svelte";
   import { Toaster } from "$lib/components/ui/sonner";
-  import Cart from "$lib/components/CartDrawer.svelte";
   import type { LayoutData } from "./$types";
-  import {
-    cartData,
-    cartItems,
-    categoriesCache,
-    customerData,
-  } from "$lib/stores.svelte";
-  import type { CartItem } from "$lib/models";
-  import { page } from "$app/state";
 
   interface Props {
     children?: import("svelte").Snippet;
@@ -25,9 +12,6 @@
 
   let scrollY = $state(0);
   let { children, data }: Props = $props();
-
-  let firstLoad = $state(true);
-  // let load = $derived(firstLoad || !$navigating);
 
   const siteData = {
     description:
@@ -43,38 +27,6 @@
     region: "IN",
   };
 
-  $inspect($cartData, $cartItems);
-
-  onMount(async () => {
-    firstLoad = false;
-
-    BigInt.prototype.toJSON = function () {
-      return Number(this);
-    };
-
-    categoriesCache.set(data?.categories || []);
-
-    // cartData.set(JSON.parse(localStorage.getItem("cartData") || "{}"));
-    cartData.subscribe((value) => {
-      localStorage.removeItem("cartData");
-      localStorage.setItem("cartData", JSON.stringify(value));
-    });
-
-    cartData.update((v) => {
-      v.orderId = data?.orderData?.orderId;
-      v.orderVersion = Number.parseInt(data?.orderData?.orderVersion as string);
-      v.orderObject = data?.orderData?.orderObject;
-      return v;
-    });
-
-    customerData.update((v) => {
-      v.customerId = data?.customerData?.customerId;
-      v.customerObject = data?.customerData?.customerObject;
-      return v;
-    });
-
-    cartItems.set(data?.orderData?.orderLineItems || []);
-  });
 </script>
 
 <svelte:head>
@@ -131,22 +83,7 @@
 
 <Toaster />
 
-<Cart />
-
-{#if page.url.pathname !== "/coming-soon"}
-  <div
-    in:fade={{ duration: 400 }}
-    class="flex h-screen flex-col justify-between"
-  >
-    <Header />
-    <main class="mt-24">
-      {@render children?.()}
-    </main>
-    <Footer />
-  </div>
-{:else}
-  {@render children?.()}
-{/if}
+{@render children?.()}
 
 {#if scrollY !== 0}
   <button
