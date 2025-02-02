@@ -8,12 +8,13 @@
     name: string;
     label: string;
     description?: string;
+    class?: string;
   }
 
-  let { formDataField = $bindable(), form, label, name, description }: Props = $props();
+  let { formDataField = $bindable(), form, label, name, description, class: className }: Props = $props();
 </script>
 
-<Form.Field {form} {name}>
+<Form.Field {form} {name} class={className}>
   <Form.Control let:attrs>
     <Form.Label>{label}</Form.Label>
     <Input {...attrs} bind:value={formDataField} placeholder={label} />

@@ -9,6 +9,7 @@
     options: any[];
     label: string;
     description?: string;
+    class?: string;
   }
 
   let {
@@ -18,6 +19,7 @@
     label,
     name,
     description,
+    class: className
   }: Props = $props();
 
   let selected = $derived(
@@ -30,7 +32,7 @@
   );
 </script>
 
-<Form.Field {form} {name}>
+<Form.Field {form} {name} class={className}>
   <Form.Control let:attrs>
     <Form.Label>{label}</Form.Label>
     <Select.Root
