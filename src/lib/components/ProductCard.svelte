@@ -19,11 +19,11 @@
 </script>
 
 <!-- for both seo and performance -->
-<Card.Root
-  class="flex flex-col justify-end min-w-[20vw] aspect-[0.8] hover:shadow-lg transition-all duration-300 ease-in-out cursor-pointer"
+<div
+  class="flex flex-col justify-end min-w-[20vw] aspect-[0.8] hover:shadow transition-all duration-300 ease-in-out cursor-pointer border"
 >
-  <Card.Content class="p-1 h-full">
-    <Carousel.Root class="h-full border rounded-lg group overflow-hidden">
+  <div class="h-full">
+    <Carousel.Root class="h-full group overflow-hidden">
       <Carousel.Content>
         {#each productImages as imageObj}
           <Carousel.Item
@@ -46,9 +46,10 @@
         <Carousel.Next class="-translate-x-14 group-hover:inline-flex hidden" />
       {/if}
     </Carousel.Root>
-  </Card.Content>
 
-  <Card.Footer class="p-3 pt-0">
+  </div>
+
+  <div class="p-3">
     <a
       href={`${page.url.origin}/product/${productData.id}`}
       onclick={(e) => {
@@ -56,12 +57,12 @@
         goto(`/product/${productData.id}`);
       }}
     >
-      <div class="text-xs max-w-[19vw] w-full whitespace-nowrap overflow-clip">
+      <div class="flex justify-between font-light w-full whitespace-nowrap overflow-clip">
         <p class="">{productData.itemData?.name}</p>
         <p>
           {formatPrice(itemBaseData?.priceMoney?.amount)}
         </p>
       </div>
     </a>
-  </Card.Footer>
-</Card.Root>
+  </div>
+</div>

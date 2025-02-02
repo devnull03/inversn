@@ -1,7 +1,7 @@
 import FormCheckbox from "./FormCheckbox.svelte";
 import FormInput from "./FormInput.svelte";
 import FormSelect from "./FormSelect.svelte";
-import { formSchema, IndianStates, type FormSchema } from "$lib/components/form/schema";
+import { formSchema, IndianStates, type FormSchema, type FormData } from "$lib/components/form/schema";
 
 export {
 	FormCheckbox,
@@ -11,4 +11,5 @@ export {
 	formSchema,
 	IndianStates,
 	type FormSchema,
+	type FormData,
 };

@@ -55,8 +55,12 @@ export const actions: Actions = {
 			redirect(303, `/checkout`);
 		}
 
+		console.log(res);
+		
+
 		return {
 			variationId,
+			form: 'product',
 			...res,
 		}
 	},

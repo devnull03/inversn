@@ -56,7 +56,8 @@ const config: Config = {
 			},
 			fontFamily: {
 				sans: [...fontFamily.sans],
-				heading: ["\"Afacada\"", "serif"]
+				heading: ["\"Afacada\"", "serif"],
+				body: ["Cantarell", "sans-serif"]
 			}
 		}
 	},
